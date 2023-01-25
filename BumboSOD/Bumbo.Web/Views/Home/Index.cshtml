@@ -1,0 +1,11 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="jumbotron jumbotron-fluid mt-20">
+    <div class="container">
+        <h1 class="display-4">@Localizer["HomePageTitle"]</h1>
+        <h3>Welkom bij het administratie- en roostersysteem van Bumbo.</h3>
+    </div>
+</div>

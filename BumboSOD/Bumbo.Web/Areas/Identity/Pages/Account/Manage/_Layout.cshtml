@@ -1,0 +1,27 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Index = Bumbo.Web.Resources.Areas.Identity.Pages.Account.Index
+@{
+    if (ViewData.TryGetValue("ParentLayout", out var parentLayout))
+    {
+        Layout = (string)parentLayout;
+    }
+    else
+    {
+        Layout = "/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<div>
+    <h2>@Index.h2Title</h2>
+    <hr/>
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_ManageNav"/>
+        </div>
+        <div class="col-md-9">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@await RenderSectionAsync("PageScripts", required: false)

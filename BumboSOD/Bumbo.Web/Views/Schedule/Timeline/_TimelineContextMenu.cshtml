@@ -1,0 +1,418 @@
+@using NuGet.Protocol
+@model ScheduleViewModel
+
+<script>
+   let contextMenuProperties;
+   let ctrlPressed = false;
+
+   window.onkeydown = function(e) {
+       if (e.ctrlKey) {
+           ctrlPressed = true;
+       }
+   };
+
+   window.onkeyup = function(e) {
+       if (e.key === "Control") {
+           ctrlPressed = false;
+       }
+   };
+
+   window.onclick = function(e) {
+       if (e.target.id !== "context-menu-timeline") {
+           contextMenuProperties = null;
+           hideContextMenu();
+       }
+   };
+
+   timeline.on('contextmenu', function(props) {
+       props.event.preventDefault();
+       contextMenuProperties = props;
+       console.log(props.item);
+       // Get all selected items and add the newly selected item to the list
+       if (ctrlPressed) {
+           let selectedItems = timeline.getSelection();
+           selectedItems.push(props.item);
+           timeline.setSelection(selectedItems);
+       } else {
+           timeline.setSelection(props.item);
+       }
+
+       $(".custom-menu").finish().show(100);
+       $(".custom-menu").css({
+           top: props.event.pageY + "px",
+           left: props.event.pageX + "px"
+       });
+       setCorrectContextMenuItems();
+   });
+
+   function setCorrectContextMenuItems() {
+       var selected = timeline.getSelection();
+
+       var departments = @Html.Raw(@Model.DepartmentOptions.ToJson());
+       hideAllContextMenuItems();
+       if(getEmployeeIdOfContextMenu() === undefined){
+           return;
+       } else {
+           $("#context-item-go-to-employee").show();
+       }
+
+       if (selected.length > 0) {
+           // an item is selected, so show the additional divs for the context menu
+           if (contextMenuProperties.snappedTime < new Date()) return;
+
+           $("#context-item-change-department").show();
+           var departmentsAmount = [];
+           departments.forEach(function(department) {
+               $("#context-item-change-department-" + department.Id).show();
+               $("#context-item-change-department-" + department.Id).removeClass("active");
+           });
+
+           selected.forEach(function(item) {
+               var itemObject = timeline.itemsData.get(item);
+               var group = timeline.groupsData.get(itemObject.group);
+
+               departments.forEach(function(department) {
+                   console.log(department);
+                   console.log(group.departmentId);
+                   if (!group.availableDepartments.includes(department.Id)) {
+                       $("#context-item-change-department-" + department.Id).hide();
+                       if (!departmentsAmount.includes(department.Id)) {
+                           departmentsAmount.push(department.Id);
+                       }
+                   }
+                   if (selected.length === 1){
+                        $("#context-item-change-department-" + itemObject.departmentId).addClass("active");
+                   }
+               });
+           });
+           console.log(departmentsAmount);
+           if (departmentsAmount.length === departments.length) {
+               $("#context-item-change-no-department").show();
+           }
+
+           $("#context-item-remove-shift").show();
+
+           selected.forEach(function(item) {
+               var itemObject = timeline.itemsData.get(item);
+               // If one of the items is ill, show the call in better context option
+               if (itemObject.isIll) {
+                   $("#context-item-call-in-better").show();
+               } else {
+                   // If one of the items is not sick, show the call in better context option
+                   $("#context-item-call-in-ill").show();
+               }
+           });
+       } else {
+           // no item is selected, so hide the additional divs for the context menu
+           if (contextMenuProperties.snappedTime > new Date()){
+              $("#context-item-add-shift").show();
+           } else {
+              $("#context-item-add-clocked-hours").show();
+          }
+
+           var amountOfDepartments = 0;
+           var group = timeline.groupsData.get(contextMenuProperties.group);
+           departments.forEach(function(department) {
+               $("#context-item-add-shift-department-" + department.Id).removeClass("active");
+               if (group.availableDepartments.includes(department.Id)) {
+                   amountOfDepartments++;
+                   $("#context-item-add-shift-department-" + department.Id).show();
+                   if (department.Id === selectedDepartmentId){
+                      $("#context-item-add-shift-department-" + department.Id).addClass("active");
+                   }
+               } else {
+                   $("#context-item-add-shift-department-" + department.Id).hide();
+               }
+           });
+
+           if (amountOfDepartments === 0) {
+               $("#context-item-add-shift-no-department").show();
+           }
+       }
+   }
+
+   function hideAllContextMenuItems(){
+      $("#context-item-no-items-available").hide();
+      $("#context-item-add-shift").hide();
+      $("#context-item-add-clocked-hours").hide();
+      $("#context-item-add-shift-no-department").hide();
+      $("#context-item-change-department").hide();
+      $("#context-item-change-no-department").hide();
+      $("#context-item-call-in-ill").hide();
+      $("#context-item-call-in-better").hide();
+      $("#context-item-remove-shift").hide();
+      $("#context-item-go-to-employee").hide();
+   }
+
+   function deleteSelectedShiftsContextMenu() {
+       var selected = timeline.getSelection();
+
+       selected.forEach(function(item) {
+           addRemovedShift(timeline.itemsData.get(item));
+           timeline.itemsData.remove(timeline.itemsData.get(item));
+       });
+       hideContextMenu();
+   }
+
+   function getFreeItemId() {
+       var freeItemId = 2000;
+       var foundFreeItem = false;
+       // TODO: fix bug with id's getting the same id
+       while (!foundFreeItem) {
+           console.log(timeline.itemsData.get(freeItemId));
+           if (timeline.itemsData.get(freeItemId) === null || timeline.itemsData.get(freeItemId) === undefined) {
+               foundFreeItem = true;
+           } else {
+               freeItemId++;
+           }
+       }
+       return freeItemId;
+   }
+
+   function addNewClockedHourContextMenu() {
+       createNewTimelineItem(-1);
+         hideContextMenu();
+   }
+
+   function addNewShiftContextMenu() {
+       // TODO: change this if the correct department is given
+       if (selectedDepartmentId === -1) {
+           toastr.warning("Selecteer eerst een department");
+           return;
+       }
+       createNewTimelineItem(selectedDepartmentId);
+       hideContextMenu();
+   }
+
+   function addShiftForDepartmentContextMenu(departmentId){
+       createNewTimelineItem(departmentId);
+       hideContextMenu();
+   }
+
+   function createNewTimelineItem(departmentId){
+       var freeItemId = getFreeItemId();
+       var item = createNewItem(contextMenuProperties.snappedTime, contextMenuProperties.group, freeItemId, departmentId);
+       var newItem = addShift(item);
+       if (newItem != null) {
+           timeline.itemsData.add(newItem);
+       }
+   }
+
+   timeline.on('click', function(props) {
+       hideContextMenu();
+   });
+
+   function hideContextMenu() {
+       $(".custom-menu").hide(100);
+   }
+
+   function setShiftsToIllContextMenu() {
+       var selected = timeline.getSelection();
+       selected.forEach(function(item) {
+           var shift = timeline.itemsData.get(item);
+           shift.isIll = true;
+           shift.className = shift.className + " ill-shift-item";
+           timeline.itemsData.update(shift);
+           updateShift(shift);
+       });
+       hideContextMenu();
+   }
+
+   function setShiftsToBetterContextMenu() {
+       var selected = timeline.getSelection();
+       selected.forEach(function(item) {
+           var shift = timeline.itemsData.get(item);
+           shift.isIll = false;
+           if (shift.className.includes("ill-shift-item")) {
+               shift.className = shift.className.replace(" ill-shift-item", "");
+           }
+           timeline.itemsData.update(shift);
+           updateShift(shift);
+       });
+       hideContextMenu();
+   }
+
+   function changeDepartmentContextMenu(departmentId) {
+       if (departmentId === -1) {
+           toastr.warning("Selecteer een valide department");
+           return;
+       }
+       var selected = timeline.getSelection();
+       selected.forEach(function(item) {
+           var shift = timeline.itemsData.get(item);
+           console.log("eerst: " + shift.departmentId);
+           shift.className = shift.className.replace(" department-item-" + shift.departmentId, " department-item-" + departmentId);
+           shift.departmentId = departmentId;
+           timeline.itemsData.update(shift);
+           updateShift(shift);
+           console.log(shift.departmentId);
+       });
+       setActiveDepartmentItems(selectedDepartmentId);
+       hideContextMenu();
+
+   }
+
+   function goToEmployeeContextMenu(){
+       var employeeId = getEmployeeIdOfContextMenu();
+       if (employeeId === undefined){
+           toastr.warning("Deze employee heeft geen employeeId");
+           return;
+       }
+       window.location.href = "/UserManager/UserDetails/" + employeeId;
+   }
+
+   function getEmployeeIdOfContextMenu(){
+       var employee = timeline.groupsData.get(contextMenuProperties.group);
+       return employee.employeeId;
+   }
+
+   function goToDayInfoScreenContextMenu(){
+       var date = new Date(contextMenuProperties.snappedTime);
+       var dateString = date.toISOString().split('T')[0];
+       console.log(dateString);
+       window.location.href = "/Schedule/DayInfo?inputDateTime=" + dateString;
+   }
+
+
+</script>
+
+@{
+    var departmentOptions = @Model.DepartmentOptions;
+}
+
+<div class="custom-menu menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px" id="context-menu-timeline" data-kt-menu="true">
+    <!--begin::Menu item-->
+    <div class="menu-item px-3">
+        <div class="menu-content fs-7 text-dark fw-bold px-3 py-2">Quick Actions</div>
+    </div>
+    <!--end::Menu item-->
+    <div class="menu-item px-3" id="context-item-no-items-available">
+        <a href="#" class="menu-link px-3">
+            Geen opties beschikbaar
+        </a>
+    </div>
+
+    <!--begin::Menu separator-->
+    <div class="separator mb-3 opacity-75"></div>
+    <!--end::Menu separator-->
+    <!--end::Menu item-->
+    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start" id="context-item-add-shift">
+        <!--begin::Menu item-->
+        <a href="#" class="menu-link px-3" onclick="addNewShiftContextMenu()">
+            <span class="menu-title">Nieuwe shift</span>
+            <span class="menu-arrow"></span>
+        </a>
+        <!--end::Menu item-->
+
+        <!--begin::Menu sub-->
+        <div class="menu-sub menu-sub-dropdown w-175px py-4">
+
+            @foreach (var department in departmentOptions)
+            {
+                <!--begin::Menu item-->
+                <div class="menu-item px-3">
+                    @{
+                        var departmentHtmlId = "context-item-add-shift-department-" + @department.Id;
+                    }
+                    <a href="#" class="menu-link px-3" id="@departmentHtmlId" onclick="addShiftForDepartmentContextMenu(@department.Id)">
+                        @department.Name
+                    </a>
+                </div>
+                <!--end::Menu item-->
+            }
+            <div class="menu-item px-3">
+                <a href="#" class="menu-link px-3" id="context-item-add-shift-no-department">
+                    Geen mogelijke afdelingen
+                </a>
+            </div>
+        </div>
+        <!--end::Menu sub-->
+    </div>
+
+    <!--begin::Menu item-->
+    <div class="menu-item px-3" id="context-item-add-clocked-hours">
+        <a href="#" class="menu-link px-3" onclick="addNewClockedHourContextMenu()">
+            Nieuwe geklokte uren
+        </a>
+    </div>
+    <!--end::Menu item-->
+
+    <!--begin::Menu item-->
+    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start" id="context-item-change-department">
+        <!--begin::Menu item-->
+        <a href="#" class="menu-link px-3">
+            <span class="menu-title">Afdeling veranderen</span>
+            <span class="menu-arrow"></span>
+        </a>
+        <!--end::Menu item-->
+
+        <!--begin::Menu sub-->
+        <div class="menu-sub menu-sub-dropdown w-175px py-4">
+            @foreach (var department in departmentOptions)
+            {
+                <!--begin::Menu item-->
+                <div class="menu-item px-3">
+                    @{
+                        var departmentHtmlId = "context-item-change-department-" + @department.Id;
+                    }
+                    <a href="#" class="menu-link px-3" id="@departmentHtmlId" onclick="changeDepartmentContextMenu(@department.Id)">
+                        @department.Name
+                    </a>
+                </div>
+                <!--end::Menu item-->
+            }
+            <div class="menu-item px-3">
+                <a href="#" class="menu-link px-3" id="context-item-change-no-department">
+                    Geen gedeelde afdelingen
+                </a>
+            </div>
+        </div>
+        <!--end::Menu sub-->
+    </div>
+    <!--end::Menu item-->
+
+    <div class="menu-item px-3" id="context-item-call-in-ill">
+        <a href="#" class="menu-link px-3" onclick="setShiftsToIllContextMenu()">
+            Ziek melden
+        </a>
+    </div>
+    <div class="menu-item px-3" id="context-item-call-in-better">
+        <a href="#" class="menu-link px-3" onclick="setShiftsToBetterContextMenu()">
+            Beter melden
+        </a>
+    </div>
+
+    <!--begin::Menu item-->
+    <div class="menu-item px-3" id="context-item-remove-shift">
+        <a href="#" class="menu-link px-3" onclick="deleteSelectedShiftsContextMenu()">
+            Verwijder shift(s)
+        </a>
+    </div>
+    <!--end::Menu item-->
+
+    <!--begin::Menu separator-->
+    <div class="separator mt-3 opacity-75"></div>
+    <!--end::Menu separator-->
+    <div class="menu-item px-3 mt-2 mb-2" id="context-item-go-to-dayinfo">
+        <a href="#" class="menu-link px-3" onclick="goToDayInfoScreenContextMenu()">
+            Ga naar dagscherm
+        </a>
+    </div>
+    <!--begin::Menu item-->
+    <div class="menu-item px-3">
+        <div class="menu-content px-3 py-3" id="context-item-go-to-employee">
+            <a class="btn btn-light-primary btn-sm px-4" onclick="goToEmployeeContextMenu()">
+                Ga naar werknemer
+            </a>
+        </div>
+    </div>
+    <!--end::Menu item-->
+</div>
+<!--end::Menu-->
+
+<style>
+    .custom-menu{
+        z-index: 100;
+        position: absolute;
+    }
+</style>

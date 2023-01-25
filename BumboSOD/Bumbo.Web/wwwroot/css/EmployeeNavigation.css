@@ -1,0 +1,19 @@
+@media (max-width: 576px) {
+    .nav-phone > p {
+        display: none;
+    }
+
+    .nav-phone > i {
+        font-size: 200%;
+    }
+
+    .nav-phone {
+        padding: 1em;
+    }
+}
+
+.container {
+    margin-bottom: 65px
+}
+
+

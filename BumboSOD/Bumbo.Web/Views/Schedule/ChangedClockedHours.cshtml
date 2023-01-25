@@ -1,0 +1,44 @@
+@model ChangedClockedHoursViewModel
+
+<h3 class="modal-title">U heeft tijdens week @Model.WeekStartDateTime de volgende uren gewijzigd</h3>
+<div class="container">
+    <div class="row scroll mh-475px">
+        <div class="col d-flex">
+            <table class="table p-3 table-striped">
+                <thead class="">
+                <tr>
+                    <td>
+                        Medewerker
+                    </td>
+                    <td>
+                        Datum
+                    </td>
+                    <td>
+                        Gewijzigde uren
+                    </td>
+                </tr>
+                </thead>
+                <tbody class="scroll-y">
+                @foreach (var changedHours in Model.HistoryClockedHours)
+                {
+                    <tr>
+                        <td>
+                            @changedHours.Employee!.FullName
+
+                        </td>
+                        <td>
+                            @changedHours.ClockedIn.ToString("MM/dd/yyyy")
+                        </td>
+                        <td>
+                            @changedHours.ClockedIn.ToString("t") - @changedHours.ClockedOut!.Value.ToString("t")
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<a type="button" class="btn btn-secondary" asp-controller="Schedule" asp-action="Index" asp-route-dateOfWeek="@Model.HistoryClockedHours[0].ClockedIn.Date">
+    Terug naar het menu
+</a>

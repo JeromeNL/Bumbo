@@ -1,0 +1,87 @@
+@model WorkStandardsViewModel;
+
+@{
+    ViewData["Title"] = "Normeringen";
+}
+
+<div>
+    <h1>
+        Huidige normeringen
+    </h1>
+    <a class="badge badge-secondary">@(Model.Kassa != null ? $"Datum invoering: {@Model.Uitladen.DateEntered}" : "Nog geen normeringen ingevoerd")</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+        <tr class="fw-bolder fs-6 text-gray-800">
+            <th>
+                Taak
+            </th>
+            <th>
+                Vereiste tijd in minuten
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (Model.Uitladen != null)
+        {
+            <tr>
+                <td>Coli uitladen</td>
+                <td>
+                    @Model.Uitladen.RequiredTimeInMinutes
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td>
+                    Geen huidige normeringen gevonden
+                </td>
+                <td></td>
+            </tr>
+        }
+        @if (Model.VakkenVullen != null)
+        {
+            <tr>
+                <td>Vakken vullen</td>
+                <td>
+                    @Model.VakkenVullen.RequiredTimeInMinutes
+                </td>
+            </tr>
+        }
+        @if (Model.Kassa != null)
+        {
+            <tr>
+                <td>Tijd aan kassa per klant</td>
+                <td>
+                    @Model.Kassa.RequiredTimeInMinutes
+                </td>
+            </tr>
+        }
+        @if (Model.Vers != null)
+        {
+            <tr>
+                <td>Tijd per klant voor vers</td>
+                <td>
+                    @Model.Vers.RequiredTimeInMinutes
+                </td>
+            </tr>
+        }
+        @if (Model.Spiegelen != null)
+        {
+            <tr>
+                <td>Spiegelen per meter</td>
+                <td>
+                    @Model.Spiegelen.RequiredTimeInMinutes
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<p>
+    <a asp-action="WorkStandardIndex" class="btn-sm btn-primary text-white">Bekijk meer informatie over de normeringen</a>
+</p>

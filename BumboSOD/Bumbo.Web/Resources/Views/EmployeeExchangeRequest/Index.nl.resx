@@ -1,0 +1,87 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="ExchangeRequestTitle" xml:space="preserve">
+        <value>Vervangingsverzoeken medewerker</value>
+    </data>
+    <data name="ExchangeRequestHeader" xml:space="preserve">
+        <value>Vervangingsverzoeken</value>
+    </data>
+    <data name="ExchangeRequestSubHeader" xml:space="preserve">
+        <value>Hier staan alle vervangingsverzoeken die je kan en mag accepteren, inclusief jouw eigen vervangingsverzoeken</value>
+    </data>
+    <data name="Employee" xml:space="preserve">
+        <value>Medewerker</value>
+    </data>
+    <data name="Shift" xml:space="preserve">
+        <value>Dienst</value>
+    </data>
+    <data name="Time" xml:space="preserve">
+        <value>Tijd: </value>
+    </data>
+    <data name="Date" xml:space="preserve">
+        <value>Datum: </value>
+    </data>
+    <data name="Name" xml:space="preserve">
+        <value>Naam: </value>
+    </data>
+    <data name="Department" xml:space="preserve">
+        <value>Afdeling: </value>
+    </data>
+    <data name="AcceptRequest" xml:space="preserve">
+        <value>Accepteer verzoek</value>
+    </data>
+    <data name="RequestFrom" xml:space="preserve">
+        <value>Verzoek van: </value>
+    </data>
+    <data name="at" xml:space="preserve">
+        <value>op</value>
+    </data>
+    <data name="on" xml:space="preserve">
+        <value>op</value>
+    </data>
+    <data name="From" xml:space="preserve">
+        <value>van</value>
+    </data>
+    <data name="Till" xml:space="preserve">
+        <value>tot</value>
+    </data>
+    <data name="ConfirmRequest" xml:space="preserve">
+        <value>Weet je zeker dat het het verzoek wilt accepteren op </value>
+    </data>
+    <data name="CancelButton" xml:space="preserve">
+        <value>Annuleer</value>
+    </data>
+    <data name="AccepButton" xml:space="preserve">
+        <value>Accepteer</value>
+    </data>
+    <data name="NoOwnRequest" xml:space="preserve">
+        <value>Jouw eigen verzoek kan je niet accepteren.</value>
+    </data>
+    <data name="NoRequestsATM" xml:space="preserve">
+        <value>Er zijn geen vervangingsverzoeken die je kan accepteren.</value>
+    </data>
+    <data name="AgainLater" xml:space="preserve">
+        <value>Probeer later opnieuw</value>
+    </data>
+    <data name="AcceptButton" xml:space="preserve">
+        <value>Accepteer</value>
+    </data>
+    <data name="Refresh" xml:space="preserve">
+        <value>Ververs</value>
+    </data>
+</root>

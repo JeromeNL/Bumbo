@@ -1,0 +1,256 @@
+﻿@using Index = Bumbo.Web.Resources.Views.EmployeeSchedule.Index
+@using System.Globalization
+@using Bumbo.Data.Utils
+@model EmployeeSceduleViewModel
+
+@{
+    ViewBag.Title = Index.ScheduleTitle;
+}
+
+@section PageStyles{
+    <style>
+    .accordion-body
+        {
+        padding: 0 1rem;
+        }
+    </style>
+}
+
+<div class="text-center pt-5 row container d-flex justify-content-between">
+    <h1>
+        @Index.Shifts
+    </h1>
+    <button class="btn justify-content-end" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@Index.ShiftsUnderTitle">
+        <span class="svg-icon svg-icon-muted svg-icon-2hx">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="10" fill="currentColor"/>
+                <rect x="11" y="17" width="7" height="2" rx="1" transform="rotate(-90 11 17)" fill="currentColor"/>
+                <rect x="11" y="9" width="2" height="2" rx="1" transform="rotate(-90 11 9)" fill="currentColor"/>
+            </svg>
+        </span>
+    </button>
+</div>
+
+
+<div class="container">
+@if (Model.Shifts!.Count != 0)
+{
+    <div class="accordion" id="kt_accordion_1">
+    @{
+        var weekCounter = 0;
+        var collapseOrShow = "show";
+        var nowString = @Index.ThisWeek;
+    }
+
+    @foreach (var weekNumber in Model.Shifts!.Keys)
+    {
+        <div class="accordion-item">
+            @{
+                var listShifts = Model.Shifts[weekNumber];
+
+                if (weekCounter > 0)
+                {
+                    collapseOrShow = "collapse";
+                    nowString = "";
+                }
+                var beginDateFromYearAndWeekNumber = DateUtil.GetFirstDateOfWeek(DateTime.Now.Year, weekNumber);
+            }
+            <p class="accordion-header" id="kt_accordion_1_header_@weekNumber">
+                <button class="accordion-button fs-7 fw-boldest collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_@weekNumber" aria-expanded="false" aria-controls="kt_accordion_1_body_@weekNumber">
+                    @Index.Week @weekNumber @nowString | @beginDateFromYearAndWeekNumber.ToShortDateString() @Index.Till @beginDateFromYearAndWeekNumber.AddDays(6).ToShortDateString()
+                </button>
+            </p>
+            <div id="kt_accordion_1_body_@weekNumber" class="accordion-collapse @collapseOrShow" aria-labelledby="kt_accordion_1_header_@weekNumber" data-bs-parent="#kt_accordion_@weekNumber">
+                @{
+                    weekCounter++;
+                }
+                <div class="accordion-body">
+                    @for (var i = 0; i < listShifts.Count; i++)
+                    {
+                        <table class="table table-striped table-rounded table-responsive mt-3">
+                            <tbody>
+                            <div>
+                                <tr>
+                                    <td class="col-md-2 p-3">
+                                        <div>
+                                            @CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(listShifts[i].Start.Date.DayOfWeek)
+                                        </div>
+                                    </td>
+                                    <td class="col-md-3 p-3">
+                                        <div>
+                                            @listShifts[i].Start.Date.ToShortDateString()
+                                        </div>
+                                    </td>
+                                    <td></td>
+                                </tr>
+
+                                <tr class="border-bottom">
+                                    <td class="p-3 ">
+                                        <table>
+                                            <tr>
+                                                <td class="p-3 fs-8">
+                                                    <h6 class="pe-2"> @Html.Label(@Index.Time)</h6>
+                                                    @Model.Shifts![weekNumber][i].Start.ToShortTimeString() - @Model.Shifts![weekNumber][i].End.ToShortTimeString()
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table>
+                                            <tr>
+                                                <td class="p-3 fs-8">
+                                                    <h6 class="pe-2"> @Html.Label(@Index.Department)</h6>
+                                                    @Html.DisplayFor(modelItem => modelItem.Shifts![weekNumber][i].Department.Name)
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        @{
+                                            var index = i;
+                                            var shiftThatAlreadyHasAExchangeRequestSubmitted = Model.ExchangeRequests
+                                                .FirstOrDefault(er => er.ShiftId.Equals(Model.Shifts[weekNumber][index].Id));
+                                        }
+                                        @if (Model.Shifts[weekNumber][index].Start > DateTime.Now)
+                                        {
+                                            @if (shiftThatAlreadyHasAExchangeRequestSubmitted == null)
+                                            {
+                                                <!-- Accept -->
+                                                <button type="button" class="btn btn-primary btn-sm fs-9 h-50" data-bs-toggle="modal" data-bs-target="#exampleModal_@Model.Shifts[weekNumber][i].Id">
+                                                    @Index.RequestReplacement
+                                                </button>
+
+                                                <div class="modal fade" tabindex="-1" id="exampleModal_@Model.Shifts[weekNumber][i].Id">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">@Index.RequestReplacement</h5>
+                                                                <!--begin::Close-->
+                                                                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                                                                    X
+                                                                </div>
+                                                                <!--end::Close-->
+                                                            </div>
+
+                                                            <div class="modal-body">
+                                                                <p>@Index.RequestConfirmMessage<span class="text-decoration-underline">@Model.Shifts[weekNumber][i].Start.ToLongDateString()</span> @Index.From <span class="text-decoration-underline">@Model.Shifts[weekNumber][i].Start.TimeOfDay</span> @Index.Till <span class="text-decoration-underline">@Model.Shifts[weekNumber][i].End.TimeOfDay</span>?</p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">@Index.CancelButton</button>
+                                                                @{
+                                                                    var shift = i;
+                                                                }
+                                                                <a asp-action="CreateRequest" asp-route-id="@Model.Shifts[weekNumber][shift].Id" class="btn btn-primary ">@Index.RequestButton</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                int shift;
+                                                switch (shiftThatAlreadyHasAExchangeRequestSubmitted.IsApprovedByManager)
+                                                {
+                                                    case null when shiftThatAlreadyHasAExchangeRequestSubmitted.NewUser == null:
+                                                        <button type="button" class="btn btn-danger btn-sm fs-9 h-50" data-bs-toggle="modal" data-bs-target="#exampleModal3_@Model.Shifts[weekNumber][i].Id">
+                                                            @Index.CancelRequest
+                                                        </button>
+
+                                                        <div class="modal fade" tabindex="-1" id="exampleModal3_@(Model.Shifts[weekNumber][i].Id)">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title">@Index.CancelRequest</h5>
+                                                                        <!--begin::Close-->
+                                                                        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                                                                            X
+                                                                        </div>
+                                                                        <!--end::Close-->
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <p>@Index.RequestCancelConfirm <span class="text-decoration-underline">@Model.Shifts[weekNumber][i].Start.ToLongDateString()</span> @Index.From <span class="text-decoration-underline">@Model.Shifts[weekNumber][i].Start.TimeOfDay</span> @Index.Till <span class="text-decoration-underline">@Model.Shifts[weekNumber][i].End.TimeOfDay</span>?</p>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">@Index.CancelButton</button>
+                                                                        @{
+                                                        shift = i;
+                                                                        }
+                                                                        <a asp-action="RemoveRequest" asp-route-id="@Model.Shifts[weekNumber][shift].Id" class="btn btn-primary ">@Index.CancelExistingRequest</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        break;
+                                                    case null when shiftThatAlreadyHasAExchangeRequestSubmitted.NewUser != null:
+                                                        <button type="button" class="btn btn-secondary btn-sm fs-9 h-50 disabled" data-bs-toggle="modal" data-bs-target="#exampleModal_@(Model.Shifts[weekNumber][i].Id)">
+                                                            @Index.StatusPending
+                                                        </button>
+                                                        break;
+                                                    case false when shiftThatAlreadyHasAExchangeRequestSubmitted.NewUser != null:
+                                                    {
+                                                        <p class="fs-8">Verzoek geweigerd door manager</p>
+                                                        <button type="button" class="btn btn-warning btn-sm fs-9 h-50" data-bs-toggle="modal" data-bs-target="#exampleModal2_@(Model.Shifts[weekNumber][i].Id)">
+                                                            @Index.StatusAgain
+                                                        </button>
+
+                                                        <div class="modal fade" tabindex="-1" id="exampleModal2_@(Model.Shifts[weekNumber][i].Id)">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title">@Index.StatusAgain</h5>
+                                                                        <!--begin::Close-->
+                                                                        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                                                                            X
+                                                                        </div>
+                                                                        <!--end::Close-->
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <p>@Index.RequestConfirmMessage<span class="text-decoration-underline">@Model.Shifts[weekNumber][i].Start.ToLongDateString()</span> @Index.From <span class="text-decoration-underline">@Model.Shifts[weekNumber][i].Start.TimeOfDay</span> @Index.Till <span class="text-decoration-underline">@Model.Shifts[weekNumber][i].End.TimeOfDay</span>?</p>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">@Index.CancelButton</button>
+                                                                        @{
+                                                                            shift = i;
+                                                                        }
+                                                                        <a asp-action="CreateRequest" asp-route-id="@Model.Shifts[weekNumber][shift].Id" class="btn btn-primary ">@Index.RequestAgain</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <p class="fs-8">@Index.ShiftAlreadyPast</p>
+                                        }
+                                    </td>
+                                </tr>
+                            </div>
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    </div>
+}
+else
+{
+    <div class="h-400px w-auto flex-center d-flex align-center justify-content-center">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Je bent nog niet ingepland</h5>
+                <p class="card-text">Probeer later nog een keer</p>
+                <a asp-action="Index" class="btn btn-sm btn-primary ">Ververs</a>
+            </div>
+            <div class="card-footer text-muted">
+                @DateTime.Now.ToLongDateString() - @DateTime.Now.ToShortTimeString()
+            </div>
+        </div>
+    </div>
+}
+</div>

@@ -1,0 +1,29 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model PersonalDataModel
+@{
+    ViewData["Title"] = "Persoonlijke gegevens";
+    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+    Layout = "_Layout";
+}
+
+<h3>@ViewData["Title"]</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <p>Uw account bevat persoonsgegevens die u ons heeft verstrekt. Op deze pagina kunt u die gegevens downloaden of verwijderen.</p>
+        <p>
+            <strong>Als u deze gegevens verwijdert, wordt uw account definitief verwijderd en dit kan niet worden hersteld.</strong>
+        </p>
+        <form id="download-data" asp-page="DownloadPersonalData" method="post">
+            <button class="btn btn-primary" type="submit">Download</button>
+        </form>
+        <p>
+            <a id="delete" asp-page="DeletePersonalData" class="btn btn-danger">Verwijder</a>
+        </p>
+    </div>
+</div>
+
+@section PageScripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

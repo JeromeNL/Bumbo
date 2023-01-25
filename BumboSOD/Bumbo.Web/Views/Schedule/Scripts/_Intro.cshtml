@@ -1,0 +1,61 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/6.0.0/intro.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/6.0.0/introjs.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+<script>
+
+    const introKey = "intro";
+    let intro = introJs()
+                            .setOptions({
+                                disableInteraction: true,
+                                exitOnOverlayClick: false,
+                                steps: [{
+                                        title: 'Welkom',
+                                        intro: 'Hierbij een kleine introductie van de applicatie! 👋'
+                                    },
+                                    {
+                                        element: document.querySelector('.vis-text.vis-minor.vis-monday'),
+                                        intro: 'Druk op een dag om naar het dag overzicht te gaan'
+                                    },
+                                    {
+                                        element: document.querySelector('.prognose-status-indicator'),
+                                        intro: 'De prognose status indicator geeft aan hoe goed de huidige planning aan de prognose voldoet'
+                                    },
+                                    {
+                                        element: document.querySelector('#department-filter'),
+                                        intro: 'Selecteer een afdeling om voor die afdeling diensten in te plannen'
+                                    },
+                                    {
+                                        element: document.querySelectorAll('.vis-foreground .vis-group')[0],
+                                        intro: "Dubbel klik in een rij om een dienst (toekomst) of gewerkte uren (verleden) toe te voegen. Pro tip: probeer eens rechter muisknop!"
+                                    },
+                                    {
+                                        element: document.querySelector('#kt_daterangepicker_1'),
+                                        intro: 'Gebruik de date range picker om van week te wisselen'
+                                    },
+                                    {
+                                        element: document.querySelector('.vis-label.vis-group-level-0'),
+                                        intro: 'Per medewerker is de leeftijd aangegeven'
+                                    },
+                                    {
+                                        element: document.querySelector('#legenda-button'),
+                                        intro: 'Bekijk de legenda voor meer informatie'
+                                    }
+                                ]
+                            })
+                            .onbeforeexit(() => localStorage.setItem(introKey, "true"));
+
+    function setIntro() {
+        if (introKey in localStorage) return;
+        if (intro._currentStep === undefined) intro.start();
+        // Fix bug where the fron prognosis status indicator is selected
+        intro._introItems[2].element = document.querySelector('.prognose-status-indicator');
+    }
+
+
+    function startDemo(){
+        // Remove the key so the intro can start again
+        localStorage.removeItem(introKey);
+        setIntro();
+    }
+
+    timeline.on('changed', setIntro);
+</script>

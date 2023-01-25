@@ -1,0 +1,152 @@
+@using Index = Bumbo.Web.Resources.Views.EmployeeExchangeRequest.Index
+@model EmployeeExchangeRequestViewModel
+
+@{
+    ViewData["Title"] = Index.ExchangeRequestTitle;
+    Layout = "_Layout";
+}
+
+
+<div class="text-center pt-5 row container d-flex justify-content-between">
+    <h1>
+        @Index.ExchangeRequestHeader
+    </h1>
+    <button class="btn justify-content-end" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@Index.ExchangeRequestSubHeader">
+        <span class="svg-icon svg-icon-muted svg-icon-2hx">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="10" fill="currentColor"/>
+                <rect x="11" y="17" width="7" height="2" rx="1" transform="rotate(-90 11 17)" fill="currentColor"/>
+                <rect x="11" y="9" width="2" height="2" rx="1" transform="rotate(-90 11 9)" fill="currentColor"/>
+            </svg>
+        </span>
+    </button>
+</div>
+<div class="container">
+    @if (Model.ExchangeRequests!.Count != 0)
+    {
+        <table class="table table-striped table-responsive mt-8">
+            <thead class="border-gray-400 border-bottom-3">
+            <tr class="fw-bold fs-5 text-gray-800 border-bottom-3">
+                <th>
+                    <strong class="p-3">
+                        @Html.DisplayName(@Index.Shift)
+                    </strong>
+                </th>
+                <th>
+                    <strong class="p-3">
+                        @Html.DisplayName(@Index.Employee)
+                    </strong>
+                </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @for (var i = 0; i < Model.ExchangeRequests!.Count; i++)
+            {
+                <div>
+                    <tr class="border-bottom">
+                        <td class="p-3 ">
+                            <!-- Shift -->
+                            <table>
+                                <tr>
+                                    <td class="p-3 fs-8">
+                                        <h6 class="pe-5"> @Html.Label(@Index.Date)</h6>
+                                        @{
+                                            var dateOnly = Model.ExchangeRequests![i].Shift!.Start.Date.ToLongDateString();
+                                        }
+                                        @Html.DisplayFor(modelItem => dateOnly)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 fs-8">
+                                        <h6 class="pe-5"> @Html.Label(@Index.Time)</h6>
+                                        @Model.ExchangeRequests![i].Shift!.Start.ToShortTimeString() - @Model.ExchangeRequests![i].Shift!.End.ToShortTimeString()
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <!-- Employee -->
+                                <tr>
+                                    <td class="p-3 fs-8">
+                                        <h6 class="pe-5"> @Html.Label(@Index.Name)</h6>
+                                        @Html.DisplayFor(modelItem => modelItem.ExchangeRequests[i].Shift!.Employee.FirstName)
+                                        @Html.DisplayFor(modelItem => modelItem.ExchangeRequests[i].Shift!.Employee.MiddleName)
+                                        @Html.DisplayFor(modelItem => modelItem.ExchangeRequests[i].Shift!.Employee.LastName)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 fs-8">
+                                        <h6 class="pe-5"> @Html.Label(@Index.Department)</h6>
+                                        @Html.DisplayFor(modelItem => modelItem.ExchangeRequests![i].Shift!.Department.Name)
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+
+                        <td>
+                            @if (!Model.ExchangeRequests[i].OriginalUser!.Equals(Model.UserLoggedIn))
+                            {
+                                <!-- Accept -->
+                                <button type="button" class="btn btn-primary btn-sm fs-9 h-50" data-bs-toggle="modal" data-bs-target="#exampleModal_@Model.ExchangeRequests[i].Id">
+                                    @Index.AcceptRequest
+                                </button>
+
+                                <div class="modal fade" tabindex="-1" id="exampleModal_@Model.ExchangeRequests[i].Id">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">
+                                                    @Index.RequestFrom <span class="text-decoration-underline">@Model.ExchangeRequests[i].OriginalUser!.FirstName @Model.ExchangeRequests[i].OriginalUser!.MiddleName @Model.ExchangeRequests[i].OriginalUser!.LastName</span> @Index.on <span class="text-decoration-underline">@Model.ExchangeRequests[i].Shift!.Department.Name</span>
+                                                </h5>
+                                                <!--begin::Close-->
+                                                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                                                    X
+                                                </div>
+                                                <!--end::Close-->
+                                            </div>
+
+                                            <div class="modal-body">
+                                                <p>@Index.ConfirmRequest <span class="text-decoration-underline">@dateOnly</span> @Index.From <span class="text-decoration-underline">@Model.ExchangeRequests[i].Shift!.Start.TimeOfDay</span> @Index.Till <span class="text-decoration-underline">@Model.ExchangeRequests[i].Shift!.End.TimeOfDay</span>?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">@Index.CancelButton</button>
+                                                @{
+                                                    var exchangeRequest = i;
+                                                }
+                                                <a asp-action="AcceptRequest" asp-route-id="@Model.ExchangeRequests[exchangeRequest].Id" class="btn btn-primary ">@Index.AcceptButton</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-secondary btn-sm fs-9 h-50 disabled" data-bs-toggle="modal" data-bs-target="#exampleModal_@Model.ExchangeRequests[i].Id">
+                                    @Index.NoOwnRequest
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                </div>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="h-400px w-auto flex-center d-flex align-center justify-content-center">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">@Index.NoRequestsATM</h5>
+                    <p class="card-text">@Index.AgainLater</p>
+                    <a asp-action="Index" class="btn btn-sm btn-primary ">@Index.Refresh</a>
+                </div>
+                <div class="card-footer text-muted">
+                    @DateTime.Now.ToLongDateString() - @DateTime.Now.ToShortTimeString()
+                </div>
+            </div>
+        </div>
+    }
+</div>

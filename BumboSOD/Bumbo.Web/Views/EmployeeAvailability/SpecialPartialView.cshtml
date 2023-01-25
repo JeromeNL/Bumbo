@@ -1,0 +1,49 @@
+@model SpecialAvailabilityViewModel
+@{
+    ViewData["Title"] = "SpecialView";
+
+    var zeroTime = new DateTime(1, 1, 1);
+    var timeSpan = DateTime.Now - Model.UserLoggedIn.BirthDate;
+    var years = (zeroTime + timeSpan).Year - 1;
+}
+
+<div class="align-bottom">
+    @if (years < 18)
+    {
+        <div class="card-header card-header-stretch">
+            <div class="card-toolbar">
+
+                <ul class="nav nav-tabs nav-line-tabs nav-stretch fs-6 border-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#specialAvailabilityId">Speciale beschikbaarheid</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#specialSchoolHoursId">Speciale schooluren</a>
+                    </li>
+
+                </ul>
+
+
+            </div>
+        </div>
+    }
+
+    @if (years < 18)
+    {
+        <div class="tab-content" id="availabilityContent">
+            <div class="tab-pane fade active show" role="tabpanel" id="specialAvailabilityId">
+                <partial name="SpecialAvailabilityPartialView" model="@Model"/>
+            </div>
+
+            <div class="tab-pane fade" role="tabpanel" id="specialSchoolHoursId">
+                <partial name="SpecialSchoolHoursPartialView" model="@Model"/>
+            </div>
+        </div>
+    }
+    else
+    {
+        <partial name="SpecialAvailabilityPartialView" model="@Model"/>
+    }
+</div>

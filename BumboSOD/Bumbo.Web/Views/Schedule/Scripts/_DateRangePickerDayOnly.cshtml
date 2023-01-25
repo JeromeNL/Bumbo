@@ -1,0 +1,21 @@
+<script>
+    $("#kt_daterangepicker_3").daterangepicker({
+            startDate: '@DateTime.Parse(Model.StartDate).ToShortDateString()',
+            locale: {
+                format: 'DD/MM/YYYY',
+                separator: '-',
+                firstDay: 1
+            },
+            singleDatePicker: true,
+            ranges: {
+                'Gisteren': [moment().subtract(1, 'days')],
+                'Vandaag': [moment()],
+                'Morgen': [moment().add(1, 'days')],
+                'Overmorgen': [moment().add(2, 'days')],
+            }
+        }, function(start) {
+            $("#StartDate").val(start.format("DD-MM-YYYY"));
+            document.getElementById("dateForm").submit();
+        }
+    );
+</script>

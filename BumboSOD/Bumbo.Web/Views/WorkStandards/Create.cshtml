@@ -1,0 +1,86 @@
+@model WorkStandardsViewModel;
+
+@{
+    ViewData["Title"] = "Normeringen invoeren";
+    Layout = "_Layout";
+}
+
+<ol class="breadcrumb text-muted fs-6 fw-bold">
+    <li class="breadcrumb-item pe-3">
+        <a asp-controller="Home" asp-action="Index" class="pe-3">Home</a>
+    </li>
+    <li class="breadcrumb-item pe-3">
+        <a asp-controller="History" asp-action="Index" class="pe-3">Overzicht historie</a>
+    </li>
+    <li class="breadcrumb-item pe-3">
+        <a asp-controller="WorkStandards" asp-action="Index" class="pe-3">Details normeringen</a>
+    </li>
+    <li class="breadcrumb-item px-3 text-muted">Toevoegen normering</li>
+</ol>
+<br/>
+
+<h1>Nieuwe normeringen invoeren</h1>
+<div class="row">
+    <div class="col">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>
+                        Taak
+                    </th>
+                    <th>
+                        Vereiste tijd in minuten
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Coli uitladen</td>
+                    <td>
+                        <input type="number" min="0.1" max="60" asp-for="Uitladen.RequiredTimeInMinutes" class="form-control-sm"/>
+                        <span asp-validation-for="Uitladen.RequiredTimeInMinutes"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Vakken vullen</td>
+                    <td>
+                        <input type="number" min="0.1" max="60" asp-for="VakkenVullen.RequiredTimeInMinutes" class="form-control-sm"/>
+                        <span asp-validation-for="VakkenVullen.RequiredTimeInMinutes"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Tijd aan kassa per klant</td>
+                    <td>
+                        <input type="number" min="0.1" max="60" asp-for="Kassa.RequiredTimeInMinutes" class="form-control-sm"/>
+                        <span asp-validation-for="Kassa.RequiredTimeInMinutes"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Tijd per klant voor vers</td>
+                    <td>
+                        <input type="number" min="0.1" max="60" asp-for="Vers.RequiredTimeInMinutes" class="form-control-sm"/>
+                        <span asp-validation-for="Vers.RequiredTimeInMinutes"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Spiegelen per meter</td>
+                    <td>
+                        <input type="number" min="0.1" max="60" asp-for="Spiegelen.RequiredTimeInMinutes" class="form-control-sm"/>
+                        <span asp-validation-for="Spiegelen.RequiredTimeInMinutes"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="form-group">
+                <input type="submit" value="Invoeren" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section PageScripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

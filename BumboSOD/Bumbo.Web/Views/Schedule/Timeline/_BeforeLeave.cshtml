@@ -1,0 +1,15 @@
+﻿<script>
+      function changesWereMade() {
+          let newCount = Object.keys(newShifts).length;
+          let editedCount = Object.keys(editedShifts).length;
+          let deletedCount = Object.keys(deletedShifts).length;
+          return newCount + editedCount + deletedCount > 0;
+      }
+
+      let isLastRequest = false;
+
+      window.onbeforeunload = function() {
+          if (!changesWereMade() || isLastRequest) return undefined;
+          return 'U heeft niet-opgeslagen wijzigingen. Weet je zeker dat je wilt verlaten?';
+      }
+</script>

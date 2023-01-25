@@ -1,0 +1,21 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+    const selector = '.nav-link';
+    const elems = Array.from( document.querySelectorAll( selector ) );
+
+    // Get the current page URL
+    var currentPageURL = window.location.href;
+
+    // Remove the URL parameters and the fragment identifier
+    currentPageURL = currentPageURL.replace(/\?.*$/, '');
+    currentPageURL = currentPageURL.replace(/#.*$/, '');
+
+    elems.forEach( elem => {
+      if ( elem.href === currentPageURL ) {
+        elem.classList.add( 'text-success' );
+        elem.children.forEach(child => child.classList.add('text-success'));
+      }
+    } );
+    });
+</script>

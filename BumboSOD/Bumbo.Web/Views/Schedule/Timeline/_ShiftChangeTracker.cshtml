@@ -1,0 +1,39 @@
+﻿<script>
+    // List of all shifts that are modified
+    let newShifts = {};
+    let editedShifts = {};
+    let deletedShifts = {};
+
+    function addNewShift(item) {
+        item.employeeId = groups._data.get(item.group).employeeId;
+        newShifts[item.id] = item;
+        dispatchChanges();
+    }
+
+    function addRemovedShift(item) {
+        if (item.isNew) {
+            delete newShifts[item.id];
+        } else {
+            delete editedShifts[item.id];
+        }
+        if (!item.isNew) {
+            deletedShifts[item.id] = item;
+        }
+        dispatchChanges();
+    }
+
+    function updateShift(item) {
+        item.employeeId = groups._data.get(item.group).employeeId;
+        if (item.isNew) {
+            newShifts[item.id] = item;
+        } else {
+            editedShifts[item.id] = item;
+        }
+        dispatchChanges();
+    }
+
+    // Call event when shift has been modified
+    function dispatchChanges() {
+        document.dispatchEvent(new CustomEvent('shiftIsChanged'));
+    }
+</script>

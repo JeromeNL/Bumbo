@@ -1,0 +1,63 @@
+﻿@model Bumbo.Data.Models.Notification
+
+@{
+    var formId = "formnoti" + Model.Id;
+}
+
+
+<form id="@formId" method="POST" asp-controller="Notification" asp-action="MarkNotificationAsRead" target="dummyframe">
+    <div class="notification-menu-item px-3">
+        @Html.HiddenFor(x => x.Id)
+        <div class="menu-content menu-link d-flex flex-column flex-row-fluid notification-item">
+            <div class="row w-100 align-items-center">
+                <a onclick="@Html.Raw(formId)onHrefClick()" class="col-auto align-middle hover-pointer text-hover-primary text-gray-800 fs-6 fw-bold">@Model.Title</a>
+                @{
+                    var daysAgo = (@DateTime.Now.Date - @Model.HappenedAt.Date).Days;
+                }
+                <span class="col align-middle text-gray-500 fw-normal align-self-stretch fs-7">@daysAgo days ago</span>
+                <div class="col d-flex justify-content-end notification-read">
+                    <a onclick="@Html.Raw(formId)markSingleNotificationRead()" class="hover-pointer text-muted text-hover-primary fw-normal fs-7">Gelezen</a>
+                </div>
+            </div>
+            <span class="text-muted fs-7 fw-normal pt-1">@Model.Message</span>
+        </div>
+    </div>
+</form>
+<script>
+    function @Html.Raw(formId)markSingleNotificationRead() {
+        // Get header element
+        @Html.Raw(formId)submitNotification().remove();
+        updateNotificationMenu();
+    }
+
+    function @Html.Raw(formId)submitNotification() {
+        let formElement = document.getElementById('@formId');
+        formElement.submit();
+        return formElement;
+    }
+
+    function @Html.Raw(formId)onHrefClick() {
+        @Html.Raw(formId)submitNotification();
+        location.href = '@Html.Raw(Model.Href)';
+    }
+</script>
+
+<style>
+    .notification-item {
+        align-items: start !important;
+    }
+    .notification-read {
+        padding-right: 0 !important;
+    }
+    .notification-menu-item {
+        padding: 0.65rem 1rem;
+    }
+    .notification-menu-item:hover {
+        transition: color 0.2s ease, background-color 0.2s ease;
+        background-color: #E4FFF4;
+        color: #20D489;
+    }
+    .hover-pointer:hover {
+        cursor: pointer;
+    }
+</style>

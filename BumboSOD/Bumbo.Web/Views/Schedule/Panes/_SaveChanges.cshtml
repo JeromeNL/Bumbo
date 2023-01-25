@@ -1,0 +1,39 @@
+@model (string, string, string, bool)
+@* item1 = function/route
+   item2 = controller
+   item3 = dateOfWeekString *@
+
+<form action="@Url.Action("SaveChanges", "Schedule")" method="post" id="save-changes-form">
+    <input type="hidden" name="dateOfWeek" value="@Model.Item3"/>
+    <input type="hidden" name="returnToWeek" id="returnToWeek-form-value" value=""/>
+    <input type="hidden" name="newShifts" id="newShifts-form-value" value=""/>
+    <input type="hidden" name="editedShifts" id="editedShifts-form-value" value=""/>
+    <input type="hidden" name="deletedShifts" id="deletedShifts-form-value" value=""/>
+</form>
+
+<a class="btn btn-primary m-1 col w-100 disabled" id="saveButtonElement" onclick="onSaveChanges()">
+    <span class="mr-2 fa fa-save"></span>
+    Opslaan
+</a>
+<script>
+    function onSaveChanges() {
+        if (!changesWereMade()) return;
+        isLastRequest = true;
+        document.getElementById("returnToWeek-form-value").value = "@Model.Item4";
+        document.getElementById("newShifts-form-value").value = JSON.stringify(Object.values(newShifts));
+        document.getElementById("editedShifts-form-value").value = JSON.stringify(Object.values(editedShifts));
+        document.getElementById("deletedShifts-form-value").value = JSON.stringify(Object.values(deletedShifts));
+        document.getElementById("save-changes-form").submit();
+    }
+
+    document.addEventListener('shiftIsChanged', _ => {
+        let saveElement = document.getElementById("saveButtonElement");
+        let classToToggle = 'disabled';
+        if (changesWereMade()) {
+            saveElement.classList.remove(classToToggle)
+        } else {
+            saveElement.classList.add(classToToggle);
+        }
+    });
+
+</script>

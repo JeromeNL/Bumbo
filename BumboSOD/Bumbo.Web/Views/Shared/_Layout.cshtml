@@ -1,0 +1,60 @@
+﻿@using Bumbo.Data.Models.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    @{
+        <partial name="HighlightTabsScript"/>
+    }
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - Bumbo</title>
+
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700"/>
+    <!--end::Fonts-->
+    <!--begin::Global Stylesheets Bundle(used by all pages)-->
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="~/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/>
+    <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css"/>
+    <!--end::Global Stylesheets Bundle-->
+    <!--begin::Page specific Stylesheets(used by this page)-->
+    @await RenderSectionAsync("PageStyles", required: false)
+    <!--end::Page specific Stylesheets-->
+    <!-- Begin::Custom css-->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <!-- End::custom CSS-->
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+</head>
+<body>
+<header>
+    @if (User.IsInRole(Role.BranchManager.ToString()))
+    {
+        <partial name="Navigation/ManagerNavigation"/>
+    }
+    else if (User.IsInRole(Role.Employee.ToString()))
+    {
+        <partial name="Navigation/EmployeeNavigation"/>
+    }
+    else if (User.IsInRole(Role.Admin.ToString()))
+    {
+        <partial name="Navigation/AdminNavigation"/>
+    }
+    else
+    {
+        <partial name="Navigation/EmptyNavigation"/>
+    }
+</header>
+<div class="container">
+    <main role="main" class="mt-3 pb-3">
+        @RenderBody()
+    </main>
+</div>
+<script src="~/assets/plugins/global/plugins.bundle.js"></script>
+<script src="~/assets/js/scripts.bundle.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("PageScripts", required: false)
+
+</body>
+</html>

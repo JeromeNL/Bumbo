@@ -1,0 +1,95 @@
+﻿@using Newtonsoft.Json
+@model Dictionary<string, List<int>>
+
+@{
+    var sortDict = new Dictionary<int, string>();
+}
+
+<style>
+    .select2-container--bootstrap5 .select2-selection--single.form-select-solid .select2-selection__rendered {
+        color: #A1A5B7;
+    }
+</style>
+
+<div class="row">
+    <div class="col">
+        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select an option" data-hide-search="true" onchange="orderByKeyWithDepartmentFilter(this)" id="sort-dropdown">
+            @for (var i = 0; i < @Model.Keys.Count; i++)
+            {
+                var key = @Model.Keys.ElementAt(i);
+                sortDict.Add(i, key);
+                <option value="@i">@key</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <div onclick="reverseOrder()" id="order-reverse-button" class="btn btn-icon btn-bg-light" data-bs-toggle="tooltip" data-bs-placement="top" title="Lijst omdraaien" data-kt-rotate="true">
+            <span class="rotate-n180">
+                <img src="~/assets/icons/Arrow.svg" alt="Info Icon"/>
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let sortKeyDic = @Html.Raw(JsonConvert.SerializeObject(sortDict));
+    let sortDic = @Html.Raw(JsonConvert.SerializeObject(Model));
+    let selected = -1;
+
+    function orderByKeyWithDepartmentFilter(obj){
+        orderByKey(obj);
+        filterDepartments(selectedDepartmentId);
+    }
+
+    function orderByKey(obj) {
+        // Reset reverse button
+        resetButtonAndSearch(obj.value);
+
+        let newDict = [];
+        let key = sortKeyDic[obj.value];
+        // Sort list by ids
+        let dict = sortDic[key];
+
+        // Create new array from sorted list
+        for(let i = 0; i < dict.length; i++){
+            newDict.push(groups.get(dict[i]));
+        }
+
+        // Update order from groups
+        for(let i = 0; i < newDict.length; i++) {
+            newDict[i].order = i + 2;
+        }
+
+        // Update groups
+        timeline.setGroups(newDict);
+    }
+
+    function resetButtonAndSearch(id) {
+        if (id === selected) return;
+        document.getElementById('order-reverse-button').classList.remove('active');
+        if (searchObject !== null) {
+            searchObject.clear();
+        }
+        // Update selected
+        selected = id;
+    }
+
+    function reverseOrder() {
+        let newDict = [];
+
+        let allGroups = groups;
+        timeline.getVisibleGroups().forEach(function (groupId) {
+            newDict.push(allGroups.get(parseInt(groupId)));
+        });
+
+        // Sort by order
+        newDict = newDict.sort((first, second) => first.order > second.order ? 1 : -1);
+
+        // Update order by sorting
+        for(let i = 0; i < newDict.length; i++) {
+            newDict[i].order = newDict.length - i + 1;
+        }
+
+        timeline.setGroups(newDict);
+    }
+</script>

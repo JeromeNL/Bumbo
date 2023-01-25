@@ -1,0 +1,59 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model HistoryViewModel;
+
+<form method="POST">
+    <div class="hover-scroll h-500px mt-1 mb-1">
+        @for (var i = 0; i < Model.DateValues.Count; i++)
+        {
+            @if (Model.DateValues[i].Date < DateTime.Now)
+            {
+                @Html.HiddenFor(m => m.DateValues[i].Id)
+                @Html.HiddenFor(m => m.DateValues[i].Date)
+                @Html.HiddenFor(m => m.DateValues[i].Branch)
+                <div class="card row m-1">
+
+
+                    @Html.LabelFor(m => m.DateValues[i], $"{@CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(Model.DateValues[i].Date.DayOfWeek)} {Model.DateValues[i].Date.ToShortDateString()}", new { Class = "form-label pt-1" })
+
+                    <div class="row align-items-center">
+                        @Html.LabelFor(m => m.DateValues[i].AmountColi, "Aantal colli", new { Class = "col" })
+                        @Html.TextBoxFor(m => m.DateValues[i].AmountColi, new { @type = "number", @min = 0, Class = "form-control col mb-1" })
+                    </div>
+                    <div class="row align-items-center">
+                        @Html.LabelFor(m => m.DateValues[i].AmountCustomers, "Aantal klanten", new { Class = "col" })
+                        @Html.TextBoxFor(m => m.DateValues[i].AmountCustomers, new { @type = "number", @min = 0, Class = "form-control col mb-1" })
+                    </div>
+
+                </div>
+            }
+            else
+            {
+                <div class="card row m-1">
+                    @* check if there is one ore more dates in the future *@
+                    @if (Model.DateValues.Count - i == 1)
+                    {
+                        @Html.LabelFor(m => m.DateValues[i], $"{CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(Model.DateValues[i].Date.DayOfWeek)} {Model.DateValues[i].Date.ToShortDateString()}", new { Class = "form-label pt-1" })
+                        <label class="mb-2">Deze datum ligt in de toekomst</label>
+                    }
+                    else if (Model.DateValues.Count - i > 1)
+                    {
+                        var lastIndex = Model.DateValues.Count - 1;
+                        var firstDate = Model.DateValues[i];
+                        var lastDate = Model.DateValues[lastIndex];
+
+                        <label class="form-label pt-1">
+                            @CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(firstDate.Date.DayOfWeek) @firstDate.Date.ToShortDateString() t/m
+                            @CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(@lastDate.Date.DayOfWeek) @lastDate.Date.ToShortDateString()
+                        </label>
+                        <label class="mb-2">Deze datums liggen in de toekomst</label>
+                    }
+                </div>
+                break;
+            }
+        }
+    </div>
+    @Html.HiddenFor(m => m.StartDate)
+    @Html.HiddenFor(m => m.EndDate)
+    <button name="submit" value="true" type="submit" class="btn btn-primary">Opslaan</button>
+</form>

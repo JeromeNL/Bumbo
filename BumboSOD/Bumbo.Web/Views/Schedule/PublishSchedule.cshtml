@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Rooster publiceren";
+    Layout = "_Layout";
+}
+
+<h2>Rooster publiceren</h2>
+
+<p class="text-danger font-weight-bold">Let op! Je probeert een rooster te publiceren waarvan er conflicten aanwezig zijn met de CAO-regels!</p>
+
+<p class="text-danger font-weight-bold">Dit is een irreversible actie (het rooster wordt immers direct gepubliceerd voor medewerkers) en kan ernstige gevolgen hebben.</p>
+
+<p class="text-danger font-weight-bold">Weet je zeker dat je hiermee door wilt gaan?</p>
+
+<a class="btn btn-danger" asp-action="PublishSchedulePost" asp-route-startDate="@ViewBag.StartDate" asp-route-endDate="@ViewBag.EndDate">Ja, ik wil het rooster publiceren.</a>
+
+<a class="btn btn-primary" asp-action="Index" asp-route-dateOfWeek="@ViewBag.StartDate">Nee, ik wil het rooster niet publiceren.</a>

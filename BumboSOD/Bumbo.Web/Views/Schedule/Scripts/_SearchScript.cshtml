@@ -1,0 +1,34 @@
+﻿<script>
+
+// Initialize search handler
+searchObject = new KTSearch(document.querySelector('#kt_docs_search_handler_basic'));
+
+// Search handler
+searchObject.on("kt.search.process", process);
+
+searchObject.on("kt.search.clear", clear);
+
+function clear() {
+    timeline.setGroups(groups);
+}
+
+function filterSearch(query) {
+
+    // Filter original data
+    let tempGroups = groups.get({
+        filter: function(item) {
+            return item.content.toLowerCase().includes(query);
+        }
+    });
+    timeline.setGroups(tempGroups);
+
+}
+
+function process(search) {
+    setTimeout(function() {
+        let query = search.getQuery().toLowerCase();
+        filterSearch(query);
+        search.complete();
+    }, 500);
+}
+</script>

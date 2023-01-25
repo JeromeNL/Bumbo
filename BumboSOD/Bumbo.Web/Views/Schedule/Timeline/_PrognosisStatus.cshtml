@@ -1,0 +1,168 @@
+﻿@using Bumbo.Data.Utils
+@model ScheduleViewModel
+
+<script>
+    // On every change, rerender
+    timeline.on("changed", setColumnPrognosis);
+    // Adds the prognosis integration to the vis-timeline.
+    // Adds counter to the time line headers containing how many departments comply with the prognosis.
+    // Adds color coding to the headers based on prognosis
+    function setColumnPrognosis() {
+        // How this method works:
+        // Find the date for every column header
+        // Find the prognosis and schedule for every department for this day
+        // Compare for every department the prognosis and the scheduled hours and save the difference
+        // Count how many departments have enough staff
+        // Append prognosis data to the column
+        // Change the column color
+
+
+        // .vis-minor are the column header and footers; they contain the day of the month.
+        // Knowing the year and month from Ranges in the ViewModel, we can calculate the full date
+        // Knowing the full date, we can get department data from hoursDataForEachDay
+        let visMinorDates = $('.vis-top .vis-time-axis .vis-minor.vis-text').not('.vis-measure');
+
+        visMinorDates.each(function() {
+
+            // The Date object for this header/footer, used for getting the prognosis and scheduled hours
+            let dateForColumnString = null;
+            let dateNumberText = $(this).text().toString();
+
+            // Find the full date by looping through all keys in the hoursPlannedForEachDay dictionary
+            // If the day of month is the same, the correct full date is found
+            for (let dateStr in prognosisForEachDay) {
+
+                let dateObj = new Date(dateStr);
+
+                if (dateObj.getDate().toString() === dateNumberText) {
+                    dateForColumnString = (dateObj.toISOString().split("T"))[0];
+                    break;
+                }
+            }
+
+            // Not every vis-minor is a header or footer
+            // Ignore others
+            if (dateForColumnString == null) {
+                return;
+            }
+
+            // dateForcolumnString now contains the yyyy-MM-dd for the column
+
+            // find the scheduled hours and the prognosis
+            let scheduledForDepartments = hoursPlannedForEachDay[dateForColumnString];
+            let prognosisForDepartments = prognosisForEachDay[dateForColumnString];
+            let compareZipperArray = [];
+            for(let i = 0; i < Object.values(scheduledForDepartments).length; i++) {
+                const key = Object.keys(scheduledForDepartments)[i].toString();
+                compareZipperArray[key] =
+                    [
+                        scheduledForDepartments[Object.keys(scheduledForDepartments)[i]],
+                        prognosisForDepartments[Object.keys(prognosisForDepartments)[i]]
+                    ];
+            }
+
+
+            let plannedTotal = 0;
+            let prognosisTotal = 0;
+            let compareLength = Object.keys(compareZipperArray).length;
+            if (compareLength === 0) return;
+
+            for (let key of Object.keys(compareZipperArray)) {
+                let scheduled = compareZipperArray[key][0];
+                let prognosis = compareZipperArray[key][1];
+                plannedTotal += scheduled;
+                prognosisTotal += prognosis;
+            }
+            let avg = differenceInPercentage(plannedTotal, prognosisTotal);
+            let pow = Math.pow(100, avg / 100);
+            let statusColor = getGreenToRed(pow, 0, 8);
+
+            let text = $(this).text();
+            $(this).text("");
+            $(this).addClass("row");
+
+            $(this).prepend('<div class="col align-items-center d-flex"><div class="prognose-status-indicator"></div></div>');
+            $(this).prepend('<div class="col-auto">' + text + '</div>');
+            $(this).find('.prognose-status-indicator').css('background-color', statusColor);
+        });
+
+        function differenceInPercentage(value1, value2) {
+            let percentage;
+            if (value1 < value2) {
+                percentage = value1 / value2 * 100;
+            } else {
+                percentage = value2 / value1 * 100;
+            }
+            return Math.abs(percentage).toFixed(2);
+        }
+
+        function getGreenToRed(percent) {
+            let r = percent<50 ? 255 : Math.floor(255-(percent*2-100)*255/100);
+            let g = percent>50 ? 255 : Math.floor((percent*2)*255/100);
+            return 'rgba('+r+','+g+',0, 0.7)';
+        }
+
+        giveVisMinorDatesHover();
+    }
+
+    function giveVisMinorDatesHover(){
+        let visMinorDates = $('.vis-top .vis-time-axis .vis-minor.vis-text').not('.vis-measure');
+        visMinorDates.off('click').on('click', function () {
+
+        let startDate = new Date("@Html.Raw(DateTime.Parse(Model.StartDate).ToIsoString())");
+        let endDate = new Date("@Html.Raw(DateTime.Parse(Model.EndDate).ToIsoString())");
+
+        let dayOfMonthFromColumn = $(this).text().toString().split(" ")[0];
+
+
+        while (startDate.getDate() <= endDate) {
+            // prevent infinite while loop. Should never happen, but who knows.....
+            if (startDate.getFullYear() > endDate.getFullYear() + 1) {
+                return;
+            }
+
+            if (startDate.getDate().toString() === dayOfMonthFromColumn){
+                // Date is off by one
+                startDate.setDate(startDate.getDate() + 1);
+                window.location.href = "/Schedule/DayInfo?inputDateTime="+ startDate.toISOString().split('T')[0];
+                return;
+            }
+            startDate.setDate(startDate.getDate() + 1);
+        }
+    });
+    visMinorDates.css("transition", "background-color 0.2s ease");
+    visMinorDates.off('mouseenter').on('mouseenter', function () {
+        $(this).css("cursor", "pointer");
+    });
+    visMinorDates.hover(function(){
+        $(this).css("background-color", "#f2f2f2");
+    }, function(){
+        $(this).css("background-color", "initial");
+    });
+    }
+
+    @* These js objects are filled by serializing data form C# into json *@
+    // Contains the planned hours. Used for decorating the vis-timeline
+    let hoursPlannedForEachDay = @Html.Raw(@Model.TimelinePrognosis.HoursPlannedRangeJson);
+
+    // Contains the prognosis. Used for decorating the vis-timeline
+    let prognosisForEachDay = @Html.Raw(@Model.TimelinePrognosis.PrognosisRangeJson);
+</script>
+<style>
+    @* Required because of the row class *@
+    .vis-minor.row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .vis-minor.row div:nth-child(2) {
+        padding-left: 0 !important;
+    }
+
+    .prognose-status-indicator {
+        border-radius: 50%;
+        height: 10px;
+        width: 10px;
+        box-shadow: rgba(0, 0, 0, 0.10) 0 2px 6px;
+    }
+</style>

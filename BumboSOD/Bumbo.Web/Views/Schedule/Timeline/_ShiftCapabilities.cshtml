@@ -1,0 +1,126 @@
+﻿<script>
+     function addShift(item, callback) {
+         // Only add items after the current datetime
+         let newItem = item;
+         let canAddBasedOnPlacement = false;
+         let canAddItemBasedOnBoundaries = false;
+         if (item.start > new Date()) {
+             // Check if shift can be added here
+             newItem.className += ' shift-item new-item';
+             if (!showDepartmentPatternsBool) {
+                 newItem.className += ' department-item-' + item.departmentId;
+             }
+             if (selectedDepartmentId === item.departmentId) {
+                 newItem.className += ' active-department-item';
+             }
+             canAddBasedOnPlacement = canPlaceShiftInFuture(items, newItem);
+             canAddItemBasedOnBoundaries = (newItem.start > new Date() && newItem.end < Date.parse('@Model.EndDate') && newItem.start > Date.parse('@Model.StartDate'));
+         } else {
+             newItem.className += ' clocked-hour-item not-approved-clocked-hour-item';
+             canAddBasedOnPlacement = canPlaceShiftInPast(items, newItem);
+             canAddItemBasedOnBoundaries = (newItem.end < new Date() && newItem.end < Date.parse('@Model.EndDate') && newItem.start > Date.parse('@Model.StartDate'));
+         }
+         if (canAddBasedOnPlacement && canAddItemBasedOnBoundaries) {
+             addNewShift(newItem);
+             if (callback != null){
+                 callback(newItem);
+                 timeline.setSelection(newItem.id);
+             }
+             return newItem;
+         }
+         if (item.className.includes("shift-item")){
+            toastr.warning("De shift die je wilt toevoegen overlapt met een andere shift of valt op twee dagen");
+         } else {
+            toastr.warning("Het geklokte uur dat je wilt toevoegen overlapt met een ander geklokt uur of valt op twee dagen");
+         }
+         return null;
+     }
+
+     function removeShift(item, callback) {
+         addRemovedShift(item);
+         if (callback != null) {
+             callback(item);
+         }
+     }
+
+     canPlaceShiftForDepartment = function(item) {
+         var group = timeline.groupsData.get(item.group);
+         if (!group.availableDepartments.includes(item.departmentId)) {
+             return false;
+         }
+         return true;
+     }
+
+     function canPlaceShiftInFuture(allItems, item) {
+         let canUpdate = true;
+         allItems.forEach(function(i) {
+             if (i.group === item.group && i.className.includes("availability-item") === false && i.className.includes("clocked-hour-item") === false &&
+                 item.className.includes("shift-item") === true) {
+                 if (!shiftIsNotOnItem(item, i)) {
+                     canUpdate = false;
+                 }
+             }
+         });
+         if (itemIsOnTwoDays(item)) {
+             canUpdate = false;
+         }
+         return canUpdate;
+     }
+
+     function canPlaceShiftInPast(allItems, item) {
+         let canUpdate = true;
+         allItems.forEach(function(i) {
+             if (i.group === item.group && i.className.includes("availability-item") === false && i.className.includes("shift-item") === false &&
+                 item.className.includes("clocked-hour-item") === true) {
+                 if (!shiftIsNotOnItem(item, i)) {
+                     canUpdate = false;
+                 }
+             }
+         });
+         if (itemIsOnTwoDays(item)) {
+             canUpdate = false;
+         }
+         return canUpdate;
+     }
+
+     function shiftIsNotOnItem(mainItem, compareItem) {
+         let canUpdate = true;
+         if (compareItem.id !== mainItem.id) {
+             // console.log(JSON.stringify(i));
+             if (Date.parse(mainItem.start) <= Date.parse(compareItem.end) && Date.parse(mainItem.start) >= Date.parse(compareItem.start)) {
+                 // If the beginning of the item is between the start and end of another item
+                 canUpdate = false;
+             } else if (Date.parse(mainItem.end) <= Date.parse(compareItem.end) && Date.parse(mainItem.end) >= Date.parse(compareItem.start)) {
+                 // If the end of the item is between the start and end of another item
+                 canUpdate = false;
+             } else if (Date.parse(mainItem.start) <= Date.parse(compareItem.start) && Date.parse(mainItem.end) >= Date.parse(compareItem.end)) {
+                 // If the item would be bigger an go over another item
+                 canUpdate = false;
+             } else if (itemIsOnTwoDays(mainItem)) {
+                 // If the item would be bigger than a day
+                 canUpdate = false;
+             }
+         }
+         return canUpdate;
+     }
+
+     function itemIsOnTwoDays(item) {
+         return item.start.getDay() !== item.end.getDay();
+     }
+
+     function createNewItem(beginAt, group, freeItemId, dempartmentId) {
+         var startTime = beginAt;
+         var endTime = new Date(startTime);
+         endTime.setHours(endTime.getHours() + 4);
+         var item = {
+             id: freeItemId,
+             isNew: true,
+             departmentId: dempartmentId,
+             start: startTime,
+             end: endTime,
+             group: group,
+             subgroup: 1
+         };
+         return item;
+     }
+</script>

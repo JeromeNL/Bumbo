@@ -1,0 +1,37 @@
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Bumbo.Web.Models.ExportWorkedHoursViewModel
+
+@{
+    ViewData["Title"] = "Export";
+}
+
+<h1>Selecteer een periode om geklokte uren te exporteren</h1>
+
+<form method="POST" asp-action="WorkedHoursOverview" asp-controller="ExportWorkedHours">
+    <table class="table">
+        <tbody>
+        <tr>
+            <td>
+                <div class="mb-10 p-5 bg-white rounded-4">
+                    <div class="m-2">
+                        <label class="form-label col-form-label-lg">Selecteer jaar</label>
+                        @Html.DropDownListFor(o => o.Year,
+                            new SelectList(Enumerable.Range(DateTime.Now.AddYears(-5).Year, 6)
+                                .Select(x => new { value = x, text = x.ToString() }), "value", "text", DateTime.Now.Year), new { @class = "form-control" })
+                    </div>
+                    <div class="m-2">
+                        <label class="form-label col-form-label-lg">Selecteer maand</label>
+                        @Html.DropDownListFor(o => o.Month,
+                            new SelectList(Enumerable.Range(1, 12)
+                                .Select(x => new { value = x, text = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(x) }), "value", "text", DateTime.Now.AddMonths(-1).Month), new { @class = "form-control" })
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary m-3">Genereer</button>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>

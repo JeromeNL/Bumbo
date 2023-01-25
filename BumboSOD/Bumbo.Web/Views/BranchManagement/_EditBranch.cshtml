@@ -1,0 +1,77 @@
+@using System.Globalization
+@model BranchManagementViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<form asp-action="EditBranch">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="@Model.EditedBranch.Id"/>
+    <div class="row d-flex justify-content-evenly pt-4">
+        <div class="input-group mb-5">
+            <span asp-validation-for="EditedBranch!.Name" class="input-group-text">Filiaalnaam</span>
+            <input asp-for="EditedBranch!.Name" class="form-control" required="required"/>
+        </div>
+    </div>
+
+    <label class="form-label">Adress</label>
+    <div class="row d-flex justify-content-evenly">
+        <div class="input-group mb-5">
+            <span asp-validation-for="EditedBranch!.Address!.City"></span>
+            <input asp-for="EditedBranch!.Address!.City" class="form-control" required="required"/>
+
+        </div>
+    </div>
+    <div class="row d-flex justify-content-evenly">
+        <div class="input-group mb-5">
+            <span asp-validation-for="EditedBranch!.Address!.Zipcode"></span>
+            <input asp-for="EditedBranch!.Address!.Zipcode" class="form-control" required="required"/>
+
+        </div>
+    </div>
+
+    <div class="row d-flex justify-content-evenly">
+        <div class="input-group mb-5">
+            <span asp-validation-for="EditedBranch!.Address!.HouseNumber"></span>
+            <input asp-for="EditedBranch!.Address!.HouseNumber" class="form-control" required="required"/>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-evenly ">
+        <div class="input-group mb-5">
+            <span asp-validation-for="EditedBranch!.ShelfLength" class="input-group-text">Schaplengte</span>
+            <input asp-for="EditedBranch!.ShelfLength" class="form-control" required="required"/>
+        </div>
+
+    </div>
+    <label class="form-label">Openingstijden</label>
+    @for (var i = 0; i < Model.EditedBranch!.OpeningHours!.Count; i++)
+    {
+        <div class="input-group mb-5">
+            @Html.HiddenFor(editedBranch => editedBranch.EditedBranch!.OpeningHours![i].Day)
+            <span asp-validation-for="EditedBranch!.OpeningHours![i].OpeningTime"></span>
+            <input asp-for="EditedBranch!.OpeningHours![i].OpeningTime" type="time" min="00:01" max="23:59" class="form-control" placeholder="Starttijd" required="required"/>
+            <span class="input-group-text">@CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(Model.DaysOfWeek[i])</span>
+            <span asp-validation-for="EditedBranch!.OpeningHours![i].ClosingTime"></span>
+            <input asp-for="EditedBranch!.OpeningHours![i].ClosingTime" type="time" min="00:01" max="23:59" class="form-control" required="required" placeholder="Eindtijd"/>
+            <br/>
+
+        </div>
+    }
+
+    <div class="d-flex justify-content-between align-bottom">
+        <div class="form-group">
+            <input type="submit" value="Opslaan" class="btn btn-primary justify-content-end"/>
+        </div>
+
+        <div>
+            <input type="submit" value="Filiaal Verwijderen" asp-action="DeleteBranch" asp-route-id="@Model.EditedBranch.Id" class="btn btn-danger btn-sm"/>
+
+        </div>
+    </div>
+</form>
+
+
+@section PageScripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -1,0 +1,130 @@
+@using System.Globalization
+@model Bumbo.Web.Models.EmployeeAvailabilityViewModel
+
+@{
+    ViewData["Title"] = "StandardAvailability";
+    var zeroTime = new DateTime(1, 1, 1);
+    var timeSpan = DateTime.Now - Model.UserLoggedIn.BirthDate;
+    var years = (zeroTime + timeSpan).Year - 1;
+}
+
+<div class="container card shadow">
+    <form method="POST" asp-action="UpdateStandardAvailability" asp-controller="EmployeeAvailability">
+        @if (@Model.Errors != null)
+        {
+            @foreach (var error in Model.Errors)
+            {
+                <div class="alert alert-danger" role="alert">
+                    <p>@error</p>
+                </div>
+            }
+        }
+
+
+        <div class="scroll h-550px px-5 table-responsive">
+            <table class="table table-striped mt-8">
+                <thead class="border-gray-400 border-bottom-3 fw-boldest">
+                <tr class="m-5 fw-bold fs-5 text-gray-800 border-bottom-3">
+                    <th class="col-4 p-3">
+                        <div>Beschikbaarheid</div>
+                    </th>
+                    @if (years < 18)
+                    {
+                        <th class="col-2 p-3">
+                            <div>Schooluren</div>
+                            <div>(0-10 uur)</div>
+                        </th>
+                    }
+                </tr>
+                </thead>
+                <tbody>
+                @for (var itemId = 0; itemId < Model.Availabilities.Count; itemId++)
+                {
+                    <tr>
+                        <td class="p-5">
+                            <div>
+                                @{
+                                    var totalHours = TimeOnly.Parse(Model.Availabilities[itemId].EndTime) - (TimeOnly.Parse(Model.Availabilities[itemId].StartTime));
+                                }
+                                @if (totalHours > TimeSpan.Zero)
+                                {
+                                    <div class="fw-boldest">@CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(@Model.Availabilities[itemId].DayOfWeek)</div>
+                                    @if (@totalHours.Minutes != 0)
+                                    {
+                                        <div>(@totalHours.Hours uur @totalHours.Minutes minuten)</div>
+                                    }
+                                    else
+                                    {
+                                        <div>(@totalHours.Hours uur)</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="fw-boldest">@CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(@Model.Availabilities[itemId].DayOfWeek)</div>
+                                    <div>(Niet beschikbaar)</div>
+                                }
+                            </div>
+                        </td>
+                        @if (years < 18)
+                        {
+                            <td></td>
+                        }
+                    </tr>
+                    <tr class="border-bottom">
+                        <td class="p-3">
+                            <div class="row mt-1 mb-3">
+                                <div class="col">
+                                    <a>
+                                        <p>Van:</p>
+                                        <p>@Html.TextBoxFor(m => m.Availabilities[itemId].StartTime, new { type = "time" }) </p>
+                                    </a>
+                                </div>
+                                <div class="col">
+                                    <a>
+                                        <p>Tot:</p>
+                                        <p>@Html.TextBoxFor(m => m.Availabilities[itemId].EndTime, new { type = "time" }) </p>
+                                    </a>
+                                </div>
+
+                            </div>
+                            @Html.HiddenFor(m => m.Availabilities[itemId].DayOfWeek)
+
+                            <div>
+                                @if (DateTime.Parse(Model.Availabilities[itemId].EndTime) - DateTime.Parse(Model.Availabilities[itemId].StartTime) == TimeSpan.Zero)
+                                {
+                                    <a asp-action="RemoveStandardAvailability" asp-controller="EmployeeAvailability" asp-route-dayOfWeek="@Model.Availabilities[itemId].DayOfWeek" class="btn btn-secondary disabled btn-sm">Je bent niet beschikbaar</a>
+                                }
+                                else
+                                {
+                                    <a asp-action="RemoveStandardAvailability" asp-controller="EmployeeAvailability" asp-route-dayOfWeek="@Model.Availabilities[itemId].DayOfWeek" class="btn btn-danger btn-sm">Beschikbaarheid verwijderen</a>
+                                }
+                            </div>
+                        </td>
+                        @if (years < 18)
+                        {
+                            <td class="w-25">
+                                <div>
+                                    <p>
+                                        @Html.TextBoxFor(m => m.SchoolHoursForDayOfWeek[@Model.Availabilities[itemId].DayOfWeek], new { type = "number", min = "0", max = "10", value = Model.SchoolHours.ToString(CultureInfo.CurrentCulture) }) uur
+                                    </p>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <hr/>
+        <div class="d-flex align-center justify-content-center">
+            <a asp-action="Index" asp-controller="EmployeeAvailability" class="btn btn-secondary m-3">Annuleer</a>
+            <button type="submit" class="btn btn-primary m-3">Opslaan</button>
+        </div>
+    </form>
+</div>
+
+@section PageScripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css"/>
+    <script src="assets/js/scripts.bundle.js"></script>
+}

@@ -1,0 +1,67 @@
+﻿@model ScheduleViewModel
+
+@* Modal for prognosis overwrite *@
+<div class="modal fade" id="PrognosisUpdateModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Prognose van @DateTime.Parse(Model.StartDate).ToShortDateString() verhogen of verlagen.</h3>
+
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="svg-icon svg-icon-1"></span>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <p class="m-5">
+                    Verhoog de prognose met een positief getal. Met een negatief getal wordt de prognose verlaagd.
+                    Om de aanpassingen ongedaan te maken, klik op Prognose reseten
+                </p>
+
+                <form asp-action="FineTunePrognosis" id="PrognosisUpdateForm">
+
+                    @for (var i = 0; i < Model.DepartmentOptions.Count; i++)
+                    {
+                        <div class="form-group">
+                            <input type="hidden" name="offsets[@i].Key" value="@Model.DepartmentOptions[i].Id"/>
+
+                            <div class="m-5">
+                                <label class="required form-label">Aantal uur bij @Model.DepartmentOptions[i].Name</label>
+                                <input type="number" name="offsets[@i].Value" class="form-control form-control-solid" placeholder="0" value="0" max="999" min="-999"/>
+                            </div>
+                        </div>
+                    }
+
+                    <input type="hidden" name="day" value="@Model.StartDate"/>
+
+                </form>
+
+                <div class="m-5">
+                    <form id="PrognosisMutationForm" asp-action="RefreshPrognoses">
+                        @for (var i = 0; i < Model.TimelinePrognosis.PrognosisToUpdate.Length; i++)
+                        {
+                            <input type="hidden" name="[@i]" value="@Model.TimelinePrognosis.PrognosisToUpdate[i]"/>
+                        }
+                        <button onclick="prognosisUpdateForm.submit()" class="btn btn-danger" data-bs-dismiss="modal">Prognose resetten</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Sluiten</button>
+                <button type="button" class="btn btn-primary" onclick="$('#PrognosisUpdateForm').submit()">Opslaan</button>
+
+                <script>
+                     let prognosisUpdateForm = document.getElementById("PrognosisMutationForm");
+
+                     prognosisUpdateForm.onsubmit = function () {
+                         setTimeout(() => {
+                             window.location.href = window.location.href;
+                         }, 1000);
+                     }
+                     </script>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+@using Bumbo.Data.Utils
+<script>
+$("#kt_daterangepicker_1").daterangepicker({
+    "showWeekNumbers": true,
+    "maxSpan": {
+            "days": 7
+    },
+    "locale": {
+        "format": "DD/MM/YYYY",
+        "separator": "-",
+        "firstDay": 1
+    },
+    "startDate": "@DateTime.Parse(Model.StartDate).ToShortDateString()",
+    "endDate": "@DateTime.Parse(Model.EndDate).ToShortDateString()",
+    "ranges": {
+    "Afgelopen Week": [moment().subtract(7, "days"), moment()],
+    "Deze Week": [moment(), moment().add(7, "days")],
+    "Volgende Week": [moment().add(7, "days"), moment().add(14, "days")],
+    "Week @DateUtil.GetWeekNumberOfDateTime(DateTime.Now.AddDays(14))": [moment().add(14, "days"), moment().add(21, "days")],
+    "Week @DateUtil.GetWeekNumberOfDateTime(DateTime.Now.AddDays(21))":  [moment().add(21, "days"), moment().add(28, "days")]}
+    },
+        function (start, end) {
+            $("#StartDate").val(start.format("DD-MM-YYYY"));
+            $("#EndDate").val(end.format("DD-MM-YYYY"));
+            document.getElementById("dateForm").submit();
+        });
+</script>

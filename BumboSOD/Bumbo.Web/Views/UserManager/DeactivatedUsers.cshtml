@@ -1,0 +1,62 @@
+@model List<Bumbo.Data.Models.ApplicationUser>
+
+@{
+    ViewBag.Title = "Gedeactiveerde accounts";
+    Layout = "_Layout";
+}
+
+@section PageStyles
+{
+    <link href="assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css"/>
+}
+
+@section PageScripts
+{
+    <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
+    <script>
+    $("#kt_datatable_zero_configuration").DataTable();
+    </script>
+}
+
+<ol class="breadcrumb text-muted fs-6 fw-bold">
+    <li class="breadcrumb-item pe-3">
+        <a asp-controller="Home" asp-action="Index" class="pe-3">Home</a>
+    </li>
+    <li class="breadcrumb-item pe-3">
+        <a asp-controller="UserManager" asp-action="Index" class="pe-3">Gebruikersbeheer</a>
+    </li>
+    <li class="breadcrumb-item px-3 text-muted">Gedeactiveerde accounts</li>
+</ol>
+<br/>
+<h2>Gedeactiveerde accounts</h2>
+<div class="row justify-content-between">
+    <div class="col">
+        <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Register">Registreer een nieuwe gebruiker</a>
+    </div>
+</div>
+
+<table id="kt_datatable_zero_configuration" class="table table-row-bordered gy-5">
+    <thead>
+    <tr>
+        <th>Naam</th>
+        <th>E-mail</th>
+        <th>In dienst sinds</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.FullName</td>
+            <td>@user.Email</td>
+            <td>@user.RegistrationDate.ToString("dd-MM-yyyy")</td>
+            <td>
+                <a asp-controller="UserManager" asp-action="UserDetails" asp-route-id="@user.Id">Details bekijken</a>
+                <div class="separator mt-3 opacity-75"></div>
+                <a asp-controller="UserManager" asp-action="ReactivateUser" asp-route-id="@user.Id">Account heractiveren</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

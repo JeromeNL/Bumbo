@@ -1,0 +1,123 @@
+﻿@model ScheduleViewModel
+
+@{
+    var isWeek = !(DateTime.Parse(@Model.EndDate).Date - DateTime.Parse(@Model.StartDate).Date < TimeSpan.FromDays(2));
+}
+
+<script>
+
+    function print(type) {
+        let element = document.getElementById('kt_docs_vistimeline_group');
+
+        switch (type) {
+            case 'png':
+                domtoimage.toBlob(element, {filter: filter}).then((img) => saveImg(img));
+                break;
+            case 'jpg':
+                domtoimage.toJpeg(element, {filter: filter}).then((img) => saveImg(img));
+                break;
+            case 'svg':
+                 domtoimage.toSvg(element, {filter: filter}).then((img) => saveImg(img));
+                 break;
+         }
+    }
+
+    function saveImg(img) {
+        window.saveAs(img, 'rooster');
+    }
+
+    function filter(node) {
+        return (node.className !== 'vis-current-time');
+    }
+</script>
+
+<div class="row">
+    <button type="button" class="m-1 btn btn-secondary rotate col justify-content-center w-100" data-kt-menu-trigger="hover" data-kt-menu-placement="bottom-start">
+        <span class="mr-2 fa fa-list-ul"></span>
+        Extra's
+        <span class="svg-icon svg-icon-3 rotate-180 ms-3 me-0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor"></path>
+            </svg>
+        </span>
+    </button>
+
+    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-250px" data-kt-menu="true">
+        <div class="separator mb-3 opacity-75"></div>
+        @if (isWeek)
+        {
+            <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+                <a href="#" class="menu-link px-4">
+                    <span class="mr-2 fa fa-image fs-3"></span>
+                    <span class="menu-title">Exporteer als</span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="menu-sub menu-sub-dropdown w-150px py-4">
+                    <div class="menu-item px-4" onclick="print('png')">
+                        <a class="menu-link px-4">
+                            PNG
+                        </a>
+                    </div>
+                    <div class="menu-item px-4" onclick="print('jpg')">
+                        <a class="menu-link px-4">
+                            JPEG
+                        </a>
+                    </div>
+                    <div class="menu-item px-4" onclick="print('svg')">
+                        <a class="menu-link px-4">
+                            SVG
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="menu-item px-4">
+            <a class="menu-link px-4" asp-action="PrintSchedule" asp-controller="Schedule" asp-route-startDate="@Model.StartDate" asp-route-endDate="@Model.EndDate">
+                <span class="mr-2 fa fa-print fs-3"></span>
+                Print rooster
+            </a>
+        </div>
+        @if (isWeek)
+        {
+            <div class="menu-item px-4">
+                <a class="menu-link px-4" asp-controller="Schedule" asp-action="CopySchedule" asp-route-startDateTime="@Model.StartDate" asp-route-endDateTime="@Model.EndDate">
+                    <span class="mr-2 fa fa-copy fs-3"></span>
+                    Kopieër deze week
+                </a>
+            </div>
+        }
+        @if (Model.ChangesMade)
+        {
+            <div class="menu-item px-4">
+                <a class="menu-link px-4" asp-controller="Schedule" asp-action="ShowChangedClockedHours" asp-route-startTime="@Model.StartDate" asp-route-endTime="@Model.EndDate">
+                    <span class="mr-2 fa fa-hourglass-half fs-3"></span>
+                    Zie gewijzigde uren
+                </a>
+            </div>
+        }
+        <div class="menu-item px-4">
+            <a class="menu-link px-4" asp-controller="Schedule" asp-action="ApproveClockedHours" asp-route-startDate="@Model.StartDate" asp-route-endDate="@Model.EndDate">
+                <span class="mr-2 fa fa-clock fs-3"></span>
+                Accordeer gewerkte uren
+            </a>
+        </div>
+        <div class="separator mt-3 opacity-75"></div>
+        @if (!isWeek && DateTime.Parse(@Model.StartDate) > DateTime.Now)
+        {
+            <div class="menu-item px-4">
+                <a class="menu-link px-4" data-bs-toggle="modal" data-bs-target="#PrognosisUpdateModal">
+                    Prognose voor deze dag overschrijven
+                </a>
+            </div>
+        }
+        <div class="separator mt-3 opacity-75"></div>
+        <div class="menu-item px-4">
+            <div class="menu-content px-4 py-3">
+                <a class="btn btn-light-primary btn-sm px-4" asp-controller="Schedule" asp-action="PublishSchedule" asp-route-startDate="@Model.StartDate" asp-route-endDate="@Model.EndDate">
+                    <span class="mr-2 fa fa-upload fs-3"></span>
+                    Publiceer rooster
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

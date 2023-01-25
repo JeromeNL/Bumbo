@@ -1,0 +1,71 @@
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model BranchManagementViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<form asp-action="CreateNewBranch">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row d-flex justify-content-evenly pt-4">
+        <div class="input-group mb-5">
+            <span asp-validation-for="AddedBranch!.Name" class="input-group-text">Filiaalnaam</span>
+            <input asp-for="AddedBranch!.Name" class="form-control" required="required"/>
+        </div>
+    </div>
+
+    <label class="form-label">Adress</label>
+    <div class="row d-flex justify-content-evenly">
+        <div class="input-group mb-5">
+            <span asp-validation-for="AddedBranch!.Address!.City"></span>
+            <input asp-for="AddedBranch!.Address!.City" class="form-control" placeholder="Stad" required="required"/>
+
+        </div>
+    </div>
+    <div class="row d-flex justify-content-evenly">
+        <div class="input-group mb-5">
+            <span asp-validation-for="AddedBranch!.Address!.Zipcode"></span>
+            <input asp-for="AddedBranch!.Address!.Zipcode" class="form-control" placeholder="Postcode: 1234AB" required="required"/>
+
+        </div>
+    </div>
+
+    <div class="row d-flex justify-content-evenly">
+        <div class="input-group mb-5">
+            <span asp-validation-for="AddedBranch!.Address!.HouseNumber"></span>
+            <input asp-for="AddedBranch!.Address!.HouseNumber" class="form-control" placeholder="Huisnummer" required="required"/>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-evenly ">
+        <div class="input-group mb-5">
+            <span asp-validation-for="AddedBranch!.ShelfLength" class="input-group-text">Schaplengte</span>
+            <input asp-for="AddedBranch!.ShelfLength" class="form-control" placeholder="In meters, mag op 1 decimaal afgerond worden" required="required"/>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-evenly ">
+        <div class="input-group mb-5">
+
+        </div>
+    </div> <label class="form-label">Openingstijden</label>
+    @for (var i = 0; i < Model.DaysOfWeek.Count; i++)
+    {
+        <div class="input-group mb-5">
+            @Html.HiddenFor(branch => branch.AddedBranch!.OpeningHours![i])
+            <span asp-validation-for="AddedBranch!.OpeningHours![i].OpeningTime"></span>
+            <input asp-for="AddedBranch!.OpeningHours![i].OpeningTime" type="time" min="00:01" max="23:59" class="form-control" placeholder="Starttijd (HH:mm)" required="required"/>
+            <span class="input-group-text"> @CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(Model.DaysOfWeek[i]) </span>
+            <span asp-validation-for="AddedBranch!.OpeningHours![i].ClosingTime"></span>
+            <input asp-for="AddedBranch!.OpeningHours![i].ClosingTime" type="time" min="00:01" max="23:59" class="form-control" required="required" placeholder="Eindtijd(HH:mm)"/>
+            <br/>
+        </div>
+    }
+    <div class="form-group">
+        <input type="submit" value="Opslaan" class="btn btn-primary justify-content-end"/>
+    </div>
+</form>
+
+
+@section PageScripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

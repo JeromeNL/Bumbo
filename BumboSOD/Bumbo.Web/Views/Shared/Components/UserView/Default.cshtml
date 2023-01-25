@@ -1,0 +1,19 @@
+﻿@inject SignInManager<ApplicationUser> SignInManager
+@using Bumbo.Data.Models
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model UserViewModel
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <partial name="Menu/_Notification" model="@Model.Notifications"/>
+        <partial name="Menu/_User" model="@Model.UserInfo"/>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </li>
+    }
+</ul>

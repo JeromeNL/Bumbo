@@ -1,0 +1,19 @@
+﻿<script>
+    timeline.on('select', function(selectEvent) {
+        toggleTooltip(selectEvent.items.length > 0)
+    });
+
+
+    function toggleTooltip(enabled) {
+        if (enabled) {
+            document.getElementsByClassName("vis-tooltip").forEach(function(item) {
+                item.style.visibility = "hidden";
+                item.style.display = "none";
+            });
+        } else {
+            document.getElementsByClassName("vis-tooltip").forEach(function(item) {
+                item.style.display = "block";
+            });
+        }
+    }
+</script>

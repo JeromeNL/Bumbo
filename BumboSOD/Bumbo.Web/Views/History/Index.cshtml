@@ -1,0 +1,58 @@
+﻿@model HistoryViewModel;
+
+@{
+    ViewData["Title"] = "Historie";
+    Layout = "_Layout";
+}
+
+@section PageScripts {
+
+    <script>
+        $("#kt_daterangepicker_1").daterangepicker({
+            "locale": {
+                "format": "DD/MM/YYYY",
+                "separator": "-",
+                "firstDay": 1
+            },
+            "startDate": "@Model.StartDate",
+            "endDate": "@Model.EndDate",
+        },
+        function (start, end) {
+            $("#StartDate").val(start.format("DD-MM-YYYY"));
+            $("#EndDate").val(end.format("DD-MM-YYYY"));
+            document.getElementById("dateForm").submit();
+        });
+    </script>
+}
+
+
+<ol class="breadcrumb text-muted fs-6 fw-bold">
+    <li class="breadcrumb-item pe-3">
+        <a asp-controller="Home" asp-action="Index" class="pe-3">Home</a>
+    </li>
+    <li class="breadcrumb-item px-3 text-muted">Overzicht historie</li>
+</ol>
+<br/>
+<div class="row mb-2">
+    <h6 class="text-center">De historie gegevens en normeringen zorgen samen voor de prognose</h6>
+</div>
+
+<div class="container row">
+    <div class="col">
+        <form id="dateForm" method="POST">
+            <div class="mb-0">
+                <h1>Historische gegevens</h1>
+                @Html.HiddenFor(m => m.StartDate)
+                @Html.HiddenFor(m => m.EndDate)
+                <input class="form-control form-control-solid" placeholder="Pick date rage" id="kt_daterangepicker_1"/>
+            </div>
+        </form>
+        @* Render partial view with correct HistoryViewModel*@
+        @await Html.PartialAsync("_History", Model)
+    </div>
+    <div class="col">
+        <div class="row">
+            @await Html.PartialAsync("_CurrentWorkStandardOverview", Model.WorkStandardsViewModel)
+        </div>
+    </div>
+</div>

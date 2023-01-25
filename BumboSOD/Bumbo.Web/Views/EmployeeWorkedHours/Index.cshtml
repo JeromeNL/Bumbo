@@ -1,0 +1,106 @@
+@using Index = Bumbo.Web.Resources.Views.EmployeeWorkedHours.Index
+@using System.Globalization
+@model YearlyWorkedHoursViewModel
+@{ var indexAccordion = 2; }
+@{
+    ViewData["Title"] = Index.WorkedHoursTitle;
+}
+
+<div class="text-center pt-5 row container d-flex justify-content-between">
+    <h1>
+        Gewerkte uren
+    </h1>
+    <button class="btn " data-bs-toggle="tooltip" data-bs-placement="bottom" title="Gewerkte uren verdeeld in maanden">
+        <span class="svg-icon svg-icon-muted svg-icon-2hx">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="10" fill="currentColor"/>
+                <rect x="11" y="17" width="7" height="2" rx="1" transform="rotate(-90 11 17)" fill="currentColor"/>
+                <rect x="11" y="9" width="2" height="2" rx="1" transform="rotate(-90 11 9)" fill="currentColor"/>
+            </svg>
+        </span>
+    </button>
+</div>
+@if (Model.ClockedHoursViewModel.Count > 0)
+{
+    <div>
+        <div class="container mb-20">
+            @foreach (var itemMonth in Model.ClockedHoursViewModel)
+            {
+                <div class="mb-3" id="accordion_@indexAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header justify-content-between" id="accordion_header_@indexAccordion">
+                            <button class="accordion-button fs-4 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accordion_body_@indexAccordion" aria-expanded="true" aria-controls="accordion_body_@indexAccordion">
+                                <p class="fs-4 mb-0 ms-4 align-items-start">
+
+                                    @itemMonth.WorkedMonth - @itemMonth.WorkedYear
+                                </p>
+
+                            </button>
+                        </h2>
+                        <div id="accordion_body_@indexAccordion" class="accordion-collapse collapse min-w-340" aria-labelledby="accordion_header_@indexAccordion" data-bs-parent="#accordion_@indexAccordion">
+                            <div class="accordion-body ">
+                                <table class="table table-striped">
+                                    <tbody>
+                                    @for (var y = 0; y < itemMonth.ClockedHoursPerMonth.Count; y++)
+                                    {
+                                        <tr>
+                                            @{
+                                                var items = itemMonth.ClockedHoursPerMonth[y];
+                                            }
+                                            <td>
+                                                <span>@items.ClockedIn.ToString("dd/MM")</span>
+
+                                            </td>
+                                            <td>
+                                                @CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(@items.ClockedIn.DayOfWeek)<br/>
+                                                @items.ClockedIn.ToString("HH:mm") - @items.ClockedOut!.Value.ToString("HH:mm")
+
+                                            </td>
+                                            <td>
+                                                @itemMonth.WorkedHours[y].ToString(@"hh\:mm")
+                                            </td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                    <tfoot >
+                                    <tr class="justify-content-between">
+                                        <td>
+                                            @Index.TotalHours
+                                        </td>
+                                        <td>
+
+                                        </td>
+                                        <td>
+                                            <div class="badge badge-light-primary">
+                                                @itemMonth.TotalMonthlyHours!.Value @Index.Hour
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                indexAccordion++;
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="h-400px w-auto flex-center d-flex align-center justify-content-center">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">U heeft nog geen uren gewerkt</h5>
+                <p class="card-text">Probeer later nog een keer</p>
+                <a asp-action="Index" class="btn btn-sm btn-primary ">Ververs</a>
+            </div>
+            <div class="card-footer text-muted">
+                @DateTime.Now.ToLongDateString() - @DateTime.Now.ToShortTimeString()
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,109 @@
+﻿@using Bumbo.Data.Models
+@model (List<Bumbo.Data.Models.Department> departmentOptions, string departmentFilter)
+
+<div id="department-filter" class="btn-group w-100 mt-1 mb-2" data-kt-buttons="true" data-kt-buttons-target="[data-kt-button]">
+    @* Check if a department is selected *@
+    @{
+        var hasSelected = Model.departmentOptions.All(d => d.Name != Model.departmentFilter);
+        var tempDepartmentFilter = Model.departmentOptions.ToList();
+        tempDepartmentFilter.Insert(0, new Department { Id = -1, Name = "All" });
+    }
+    @* Make tabs for each department *@
+    @for (var i = 0; i < tempDepartmentFilter.Count; i++)
+    {
+        var department = tempDepartmentFilter[i];
+        var isSelected = i == 0 ? hasSelected : department.Name == Model.departmentFilter;
+        <a class="mr-2 btn btn-outline btn-color-muted department-toggle text-dark btn-active-warning @(isSelected ? "active" : "")" data-kt-button="true" data-kt-docs-advanced-forms="interactive" department-id="@department.Id">
+            <input class="btn-check" type="radio" name="method" @(isSelected ? "checked=\"checked\"" : "") value="1"/>
+            @department.Name.ToUpper()
+        </a>
+    }
+    <button class="btn btn-secondary" onclick="toggleDepartmentPatterns()">Toggle</button>
+</div>
+
+<script>
+    var showDepartmentPatternsBool = true;
+    const departmentClass = document.querySelectorAll('[data-kt-docs-advanced-forms="interactive"]');
+    let selectedDepartmentId = -1;
+    departmentClass.forEach(option => {
+        option.addEventListener('mousedown', e => {
+            e.preventDefault();
+            if (e.which !== 1) return;
+            if (e.target.classList.contains('active')) return;
+            selectedDepartmentId = parseInt(e.target.getAttribute('department-id'));
+            filterDepartmentsWithSorting(selectedDepartmentId);
+        });
+    });
+    function filterDepartmentsWithSorting(departmentId) {
+        orderByKey(document.getElementById('sort-dropdown'));
+        filterDepartments(departmentId);
+    }
+
+    function filterDepartments(departmentId) {
+        setActiveDepartmentItems(departmentId);
+        // Undo filter
+        if (departmentId === -1) {
+            // set all items;
+            return;
+        }
+        // Filter original data
+        let tempGroups = timeline.groupsData.get({
+            filter: function(item) {
+                return item.availableDepartments.includes(departmentId);
+            }
+        });
+        timeline.setGroups(tempGroups);
+    }
+
+    function setActiveDepartmentItems(departmentId){
+        // Give items with the selected department a special class
+        timeline.itemsData.forEach(item => {
+            item.className = item.className.replace('active-department-item', '');
+            if (item.departmentId === departmentId) {
+                item.className += ' active-department-item';
+            }
+        });
+        updateItems();
+    }
+
+    function toggleDepartmentPatterns() {
+        showDepartmentPatterns(showDepartmentPatternsBool);
+        showDepartmentPatternsForToggles(showDepartmentPatternsBool);
+        showDepartmentPatternsBool = !showDepartmentPatternsBool;
+    }
+
+    function showDepartmentPatterns(showDepartmentPatterns){
+       if (showDepartmentPatterns) {
+         timeline.itemsData.forEach(item => {
+           let itemObject = timeline.itemsData.get(item.id);
+           let departmentClassName = ' department-item-' + itemObject.departmentId;
+           if (!item.className.includes(departmentClassName)){
+               item.className += ' department-item-' + item.departmentId;
+           }
+       });
+       } else {
+           timeline.itemsData.forEach(item => {
+               let itemObject = timeline.itemsData.get(item.id);
+               if (item.className.includes('shift-item')){
+                   let departmentClassName = ' department-item-' + itemObject.departmentId;
+                   item.className = item.className.replace(departmentClassName, '');
+               }
+           });
+       }
+       updateItems();
+    }
+
+    function showDepartmentPatternsForToggles(showDepartmentPatterns) {
+        document.getElementsByClassName('department-toggle').forEach(toggle => {
+            if (showDepartmentPatterns) {
+                toggle.classList.add('department-item-' + toggle.getAttribute('department-id'));
+            } else {
+                toggle.classList.remove('department-item-' + toggle.getAttribute('department-id'));
+            }
+        });
+    }
+
+     function updateItems(){
+        timeline.itemsData.update(timeline.itemsData.get());
+     }
+</script>

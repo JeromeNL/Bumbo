@@ -1,0 +1,115 @@
+@using Bumbo.Data.Utils
+@model ScheduleViewModel
+
+@{
+    var date = DateTime.Parse(Model.StartDate);
+    ViewBag.Title = "Dagoverzicht";
+    Layout = "_Layout";
+
+    var isWeek = !(DateTime.Parse(@Model.EndDate).Date - DateTime.Parse(@Model.StartDate).Date < TimeSpan.FromDays(2));
+}
+
+@section PageStyles {
+    <partial name="_TimelineStyles"/>
+}
+
+@section PageScripts {
+    <partial name="_Timeline" model="@Model"/>
+    <partial name="Scripts/_SearchScript"/>
+    <partial name="Scripts/_ScriptGraphPlannedVsPrognosis" model="@Model.DepartmentOptions"/>
+    <partial name="Scripts/_ScriptGraphHourDistributionForDay" model="@Model.EmployeeAtEveryHour"/>
+    <partial name="Scripts/_DateRangePickerDayOnly"/>
+}
+
+<div id="top-item-above-header">
+    <partial name="Panes/_PrognosisWarnings" model="@Model.TimelinePrognosis"/>
+    <ol class="breadcrumb text-muted fs-6 fw-bold">
+        <li class="breadcrumb-item pe-3">
+            <a asp-controller="Schedule" asp-action="Index" asp-route-dateOfWeek="@Model.StartDate" class="pe-3">Week @DateUtil.GetWeekNumberOfDateTime(date)</a>
+        </li>
+        <li class="breadcrumb-item px-3 text-muted">@date.Date.ToShortDateString()</li>
+    </ol>
+</div>
+
+
+<div class="row sticky-top z-index-2 bg-light pt-3">
+    <h1>Rooster Scherm - @date.DayOfWeek @date.Day @date.ToString("MMMM") @date.Year</h1>
+    <div class="row justify-content-between mt-2 mb-2">
+        <div class="col">
+            @await Html.PartialAsync("Panes/_PrognosisTrend", Model)
+        </div>
+        <div class="col">
+            @await Html.PartialAsync("Panes/_TimeDistributionTrend", Model)
+        </div>
+        <div class="col">
+            @await Html.PartialAsync("Panes/_CaoConflicts", Model)
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl">
+            <div class="row">
+                <div class="col">
+                    <form id="dateForm" method="POST">
+                        <div class="input-group m-1">
+                            @Html.HiddenFor(m => m.StartDate)
+                            @Html.HiddenFor(m => m.EndDate)
+                            <span class="input-group-text" id="basic-addon2">
+                                <img src="/assets/icons/Calendar.svg" alt="Calendar"/>
+                            </span>
+                            <input class="form-control form-control-solid" placeholder="Pick date" id="kt_daterangepicker_3"/>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-4">
+                    <div class="row justify-content-center">
+                        @{
+                            var previousDay = DateTime.Parse(Model.StartDate).AddDays(-1).ToString("dd-MM-yyyy");
+                            var nextDay = DateTime.Parse(Model.StartDate).AddDays(1).ToString("dd-MM-yyyy");
+                        }
+                        <a class="col btn btn-secondary m-1" asp-controller="Schedule" asp-action="DayInfo" asp-route-inputDateTime="@previousDay">
+                            <i class="bi bi-arrow-left fs-2"></i>
+
+                        </a>
+                        <a class="col btn btn-secondary m-1" asp-controller="Schedule" asp-action="DayInfo" asp-route-inputDateTime="@nextDay">
+                            <i class="bi bi-arrow-right fs-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl d-flex justify-content-center">
+            @{
+                var departmentFilter = (@Model.DepartmentOptions, @Model.DepartmentFilter);
+            }
+            <partial name="Panes/_DepartmentFilter" model="@departmentFilter"/>
+        </div>
+        <div class="col-xl-2 d-none d-xl-block">
+            <partial name="Panes/_ScheduleLegenda" model="@Model"/>
+        </div>
+    </div>
+
+    <div class="row justify-content-between">
+        <div class="col">
+            <partial name="Panes/_Search"/>
+        </div>
+        <div class="col">
+            <partial name="Panes/_SortDropDown" model="@Model.Sortings"/>
+        </div>
+        <div class="col-2">
+            @{
+                var saveChangesModel = ("SaveChanges", "Schedule", Model.StartDate, false);
+                <partial name="Panes/_SaveChanges" model="saveChangesModel"/>
+            }
+        </div>
+        <div class="col-2">
+            <partial name="Panes/_ExtraMenu" model="@Model"/>
+        </div>
+    </div>
+</div>
+<div id="kt_docs_vistimeline_group"></div>
+
+@if (!isWeek)
+{
+    <partial name="Panes/_PrognosisFineTuneModal", model="@Model"/>
+}

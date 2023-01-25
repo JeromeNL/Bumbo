@@ -1,0 +1,11 @@
+﻿<script>
+    function timelineOnAddEvent(item, callback) {
+        if (selectedDepartmentId === -1 && item.start > new Date()) {
+            toastr.warning("Selecteer eerst een department");
+            return;
+        }
+        var startTime = item.start;
+        var newItem = createNewItem(startTime, item.group, item.id, selectedDepartmentId);
+        addShift(newItem, callback);
+    }
+</script>

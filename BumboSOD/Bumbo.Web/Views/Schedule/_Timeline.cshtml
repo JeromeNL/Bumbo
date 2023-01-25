@@ -1,0 +1,129 @@
+@using NuGet.Protocol
+@model ScheduleViewModel
+
+<!-- Main script -->
+<script src="~/assets/plugins/custom/vis-timeline/vis-timeline.bundle.js"></script>
+
+<!-- External configuration -->
+<partial name="Scripts/_Toastr"/>
+
+<!-- Events -->
+<partial name="Timeline/Events/OnAdd"/>
+<partial name="Timeline/Events/OnMove"/>
+<partial name="Timeline/Events/OnMoving"/>
+<partial name="Timeline/Events/OnRemove"/>
+<partial name="Timeline/Events/OnSnap"/>
+<partial name="Timeline/_BeforeLeave"/>
+
+<!-- Pre configuring timeline -->
+<partial name="Timeline/_ShiftChangeTracker"/>
+
+<script>
+        // Timeline options
+        let timelineOptions = {
+            stack: false,
+            horizontalScroll: false,
+            verticalScroll: true,
+            selectable: true, // select items on timeline
+            editable: {
+                add: true,                  // add new items by double tapping
+                updateTime: true,           // drag items horizontally
+                updateGroup: true,          // drag items from one group to another
+                remove: true,               // delete an item by tapping the delete button top right
+                overrideItems: false        // allow these options to override item.editable
+            },
+            moveable: false,
+            multiselect: true,
+            showTooltips: true,
+            tooltipOnItemUpdateTime: {
+                template: function(item) {
+                    return moment(item.start).format('HH:mm') + ' - ' + moment(item.end).format('HH:mm');
+                }
+            },
+            tooltip: {
+                followMouse: false,
+                template: function(item) {
+                    return moment(item.start).format('HH:mm') + ' - ' + moment(item.end).format('HH:mm');
+                }
+            },
+            groupHeightMode: 'fitItems',
+            start: Date.parse('@Model.StartDate'),
+            end: Date.parse('@Model.EndDate'),
+            timeAxis: {scale: '@Model.Step.ToString().ToLower()', step: 1},
+            stackSubgroups: false,
+            margin: {
+                item: {
+                    horizontal: 0,
+                    vertical: 20
+                },
+                axis: 5
+            },
+            orientation: {
+                axis: "both",
+                item: "top",
+            },
+            snap: (date, scale, step) => timelineOnSnapEvent(date, scale, step),
+            onMoving: (item, callback) => timelineOnMovingEvent(item, callback),
+            onMove: (item, callback) =>  timelineOnMoveEvent(item, callback),
+            onAdd: (item, callback) => timelineOnAddEvent(item, callback),
+            onRemove: (item, callback) => timelineOnRemoveEvent(item, callback),
+        };
+
+        // Configure timeline content
+        let groups = new vis.DataSet(@Html.Raw(Model.TimelineViewModel.Groups.ToJson()));
+        let items = new vis.DataSet(@Html.Raw(Model.TimelineViewModel.ShiftItems.ToJson()));
+        items.add(@Html.Raw(Model.TimelineViewModel.ClockedHourItems.ToJson()));
+        items.add(@Html.Raw(Model.TimelineViewModel.AvailabilityItems.ToJson()));
+
+        // Find timeline element
+        let container = document.getElementById("kt_docs_vistimeline_group");
+        // Timeline instance
+        let timeline = new vis.Timeline(container, items, groups, timelineOptions);
+
+        // Set timeline groups/items
+        timeline.setGroups(groups);
+        timeline.setItems(items);
+
+</script>
+<script>
+    const parent = window;
+    const topContent = document.querySelector("#top-item-above-header");
+    const navigation = document.querySelector(".navbar");
+    const child = document.querySelector(".vis-panel.vis-top");
+    var timelineHeader = child.cloneNode(true);
+
+    window.onresize = function() {
+        stickyHeader();
+    };
+
+    parent.addEventListener("scroll", function () {
+        stickyHeader();
+    });
+
+    function stickyHeader(){
+        if (timelineHeader.className.includes("extraTimelineHeader")) {
+            timelineHeader.remove();
+        }
+        timelineHeader = child.cloneNode(true);
+        if (window.scrollY > navigation.offsetHeight + topContent.offsetHeight) {
+            let navigationHeader = document.querySelector(".sticky-top");
+            timelineHeader.style.top = navigationHeader.offsetHeight + "px";
+            timelineHeader.style.left = parseFloat(timelineHeader.style.left) + 10 + "px";
+            timelineHeader.style.background = "#fbf8f5";
+            timelineHeader.style.borderBottom = "3px solid #ebedf2";
+            timelineHeader.classList.add("extraTimelineHeader");
+            navigationHeader.append(timelineHeader);
+            giveVisMinorDatesHover();
+        }
+    }
+</script>
+
+<!-- Post configuring timeline -->
+@* Calculations for shift movement *@
+<partial name="Timeline/_ShiftCapabilities"/>
+@* Prognosis color indicators in timeline *@
+<partial name="Timeline/_PrognosisStatus" model="@Model"/>
+@* Right click menu *@
+<partial name="Timeline/_TimelineContextMenu" model="@Model"/>
+@* Post Tooltip *@
+<partial name="Timeline/_TimelineTooltip"/>

@@ -1,0 +1,58 @@
+@model ImportViewModel
+
+@{
+    ViewBag.Title = "Medewerkers invoeren";
+    Layout = "_Layout";
+}
+
+@section PageScripts
+{
+    <script>
+    var button = document.querySelector("#kt_block_ui_1_button");
+    var target = document.querySelector("#kt_block_ui_1_target");
+
+    var blockUI = new KTBlockUI(target);
+
+    button.addEventListener("click", function() {
+        if (blockUI.isBlocked()) {
+            blockUI.release();
+            button.innerText = "Block";
+        } else {
+            blockUI.block();
+            button.innerText = "Release";
+        }
+    });
+    </script>
+}
+
+<ol class="breadcrumb text-muted fs-6 fw-bold">
+    <li class="breadcrumb-item pe-3">
+        <a asp-controller="Home" asp-action="Index" class="pe-3">Home</a>
+    </li>
+    <li class="breadcrumb-item pe-3">
+        <a asp-controller="UserManager" asp-action="Index" class="pe-3">Gebruikersbeheer</a>
+    </li>
+    <li class="breadcrumb-item px-3 text-muted">Medewerkers importeren</li>
+</ol>
+<br/>
+
+<div id="kt_block_ui_1_target">
+    <h2>Medewerkers invoeren</h2>
+    <form enctype="multipart/form-data" asp-action="Import">
+        <dl>
+            <dt>
+                <label class="form-label" asp-for="File"></label>
+            </dt>
+            <dd>
+                <input accept="text/csv" class="form-control" asp-for="File" type="file">
+                <span asp-validation-for="File"></span>
+            </dd>
+            <div class="form-floating">
+                <select asp-for="BranchId" class="form-select" data-control="select2" data-placeholder="Kies een optie" asp-items="ViewBag.Branches"></select>
+                <label asp-for="BranchId"></label>
+                <span asp-validation-for="BranchId" class="text-danger"></span>
+            </div>
+        </dl>
+        <input class="btn btn-primary" type="submit" value="Upload" id="kt_block_ui_1_button"/>
+    </form>
+</div>

@@ -1,0 +1,35 @@
+@using Index = Bumbo.Web.Resources.Views.Shared.Navigation.EmployeeNavigation
+<link rel="stylesheet" href="/css/EmployeeNavigation.css">
+
+<nav class="fixed-bottom navbar-expand navbar-toggleable-sm navbar-light bg-white border-bottom">
+    <div class="container-fluid">
+        <div class="navbar d-flex justify-content-evenly w-100">
+            <div class="navbar-nav nav-pills flex-grow-1">
+                <div class="nav-item col">
+                    <a class="nav-link text-black nav-phone text-center" asp-area="" asp-controller="EmployeeSchedule" asp-action="Index">
+                        <i class="justify-content-center bi bi-calendar"></i>
+                        <p class="m-0">@Index.Schedule</p>
+                    </a>
+                </div>
+                <div class="nav-item col">
+                    <a class="nav-link text-black nav-phone text-center" asp-area="" asp-controller="EmployeeExchangeRequest" asp-action="Index">
+                        <i class="justify-content-center bi bi-currency-exchange"></i>
+                        <p class="m-0">@Index.ChangeRequests</p>
+                    </a>
+                </div>
+                <div class="nav-item col">
+                    <a class="nav-link text-black nav-phone text-center" asp-area="" asp-controller="EmployeeAvailability" asp-action="Index">
+                        <i class="justify-content-center bi bi-send-check-fill"></i>
+                        <p class="m-0">Beschikbaarheden</p>
+                    </a>
+                </div>
+                <div class="nav-item col">
+                    <a class="nav-link text-black nav-phone text-center" asp-area="" asp-controller="EmployeeManager" asp-action="EmployeeUserOverview">
+                        <i class="justify-content-center bi bi-person-circle"></i>
+                        <p class="m-0">@User.Identity?.Name</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

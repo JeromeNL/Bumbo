@@ -1,0 +1,64 @@
+﻿@using NuGet.Protocol
+@model IDictionary<string, IDictionary<DateTime, double>>
+<script>
+let graphDistribution = [];
+
+{
+    let graphDistributionRaw = @Html.Raw(Model.ToJson());
+    let distributionKeys = Object.keys(graphDistributionRaw);
+    for(let i = 0; i < distributionKeys.length; i++) {
+        let keyName = distributionKeys[i];
+        let seriesObject = {
+            name: keyName,
+            data: convertArrayToHours(graphDistributionRaw[keyName])
+        };
+        graphDistribution.push(seriesObject);
+    }
+
+    function convertArrayToHours(data) {
+        const newData = [];
+        const keys = Object.keys(data);
+        const values = Object.values(data);
+
+        for (let i = 0; i < keys.length; i++) {
+            let tempArray = [];
+            const key = keys[i];
+            const value = values[i];
+            const hour = key.split('T')[1].split(':')[0];
+            tempArray.push(parseInt(hour));
+            tempArray.push(value);
+            newData.push(tempArray);
+        }
+        return newData;
+    }
+}
+
+let options = {
+        series: graphDistribution,
+          chart: {
+          type: 'area',
+          height: '200px',
+          toolbar: {
+             show: false
+          },
+          zoom: {
+             enabled: false
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        markers: {
+          hover: {
+            sizeOffset: 4
+          }
+        },
+        yaxis: {
+            min: 0,
+            tickAmount: 1
+        }
+    };
+
+    let chart = new ApexCharts(document.querySelector("#graph-hour-distribution-for-day"), options);
+    chart.render();
+</script>

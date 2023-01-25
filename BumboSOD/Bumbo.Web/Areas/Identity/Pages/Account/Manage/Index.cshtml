@@ -1,0 +1,58 @@
+﻿@page
+@using Index = Bumbo.Web.Resources.Areas.Identity.Pages.Account.Index
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IndexModel
+@{
+    ViewData["Title"] = Index.ProfileEmployee;
+    ViewData["ActivePage"] = ManageNavPages.Index;
+    Layout = "_Layout";
+}
+
+<h3>@Index.H3Title</h3>
+<partial name="_StatusMessage" for="StatusMessage"/>
+<div class="row">
+    <div class="col-md-6">
+        <form id="profile-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating">
+                <input asp-for="Username" class="form-control" disabled/>
+                <label asp-for="Username" class="form-label"></label>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.FirstName" class="form-control" disabled/>
+                <label asp-for="Input.FirstName" class="form-label"></label>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.MiddleName" class="form-control" disabled/>
+                <label asp-for="Input.MiddleName" class="form-label"></label>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.LastName" class="form-control" disabled/>
+                <label asp-for="Input.LastName" class="form-label"></label>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.Zipcode" class="form-control" disabled/>
+                <label asp-for="Input.Zipcode" class="form-label"></label>
+
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.HouseNumber" class="form-control" disabled/>
+                <label asp-for="Input.HouseNumber" class="form-label"></label>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.City" class="form-control" disabled/>
+                <label asp-for="Input.City" class="form-label"></label>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.PhoneNumber" class="form-control"/>
+                <label asp-for="Input.PhoneNumber" class="form-label"></label>
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">@Index.SaveButton</button>
+        </form>
+    </div>
+</div>
+
+@section PageScripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

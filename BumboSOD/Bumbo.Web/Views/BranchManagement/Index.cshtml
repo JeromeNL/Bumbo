@@ -1,0 +1,41 @@
+@model BranchManagementViewModel
+
+@{
+    ViewBag.Title = "Branch Management";
+}
+<h1 class="pb-2">Filiaal beheer</h1>
+<div class="container row pt-3">
+    <div class="container col table-responsive">
+        @if (Model.AllBranches != null)
+        {
+            <table class="table table-rounded table-striped border gy-7 gs-7">
+                <thead>
+                <a type="button" asp-action="Create" class="btn-sm btn-primary text-white">
+                    Filiaal toevoegen
+                </a>
+                </thead>
+                <tbody>
+                @foreach (var branches in Model.AllBranches)
+                {
+                    <tr>
+                        <td>
+                            @branches.Name
+                        </td>
+                        <td>
+                            <div>
+                                <a type="button" class="btn btn-secondary" value="Information" asp-action="GetBranchById" asp-route-id="@branches.Id">
+                                    <input type="hidden" name="selectedBranch" value="@branches"/>
+                                    Zie meer
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    </div>
+    <div class="container col">
+        <partial name="_BranchInformation" model="@Model"/>
+    </div>
+</div>

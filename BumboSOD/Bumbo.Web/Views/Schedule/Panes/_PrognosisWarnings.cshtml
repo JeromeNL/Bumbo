@@ -1,0 +1,41 @@
+﻿@model Bumbo.Web.Models.Timeline.TimelinePrognosisViewModel
+
+<form id="PrognosisWarningForm" asp-action="RefreshPrognoses">
+
+
+    @for (var i = 0; i < Model.PrognosisToUpdate.Length; i++)
+    {
+        <input type="hidden" asp-for="@Model.PrognosisToUpdate[i]">
+    }
+
+    @if (Model.PrognosisOutdated)
+    {
+        <button class="alert alert-danger prognosisButton" onclick="sendPrognosisUpdateRequest()">
+            De prognose is gebaseerd op oude data. Klik hier als je de prognose wilt verversen met de nieuwe Noemeringen.
+        </button>
+    }
+
+    @if (Model.PrognosisHadInvalidData)
+    {
+        <button class="alert alert-danger prognosisButton" onclick="sendPrognosisUpdateRequest()">
+            De prognose is gebaseerd op incomplete data.
+            Controlleer of alle noemeringen en historische data gevuld zijn.
+            Vervolgens kunt u hier klikken om een nieuwe prognose te genereren.
+        </button>
+    }
+
+    <script>
+    let prognosisForm = document.getElementById("PrognosisWarningForm");
+
+    prognosisForm.onsubmit = function () {
+        setTimeout(() => {
+            window.location.href = window.location.href;
+        }, 1000);
+    }
+
+    function sendPrognosisUpdateRequest() {
+        prognosisForm.submit();
+    }
+
+    </script>
+</form>

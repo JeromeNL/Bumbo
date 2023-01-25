@@ -1,0 +1,78 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="ScheduleTitle" xml:space="preserve">
+        <value>Arbeitsplan</value>
+    </data>
+    <data name="Shifts" xml:space="preserve">
+        <value>Schichten</value>
+    </data>
+    <data name="ShiftsUnderTitle" xml:space="preserve">
+        <value>Sieh dir alle deine Schichten an</value>
+    </data>
+    <data name="Till" xml:space="preserve">
+        <value>bis</value>
+    </data>
+    <data name="ThisWeek" xml:space="preserve">
+        <value>(Diese Woche)</value>
+    </data>
+    <data name="Week" xml:space="preserve">
+        <value>Woche</value>
+    </data>
+    <data name="ShiftAlreadyPast" xml:space="preserve">
+        <value>Die Schichte liegt in der Vergangenheit.</value>
+    </data>
+    <data name="Department" xml:space="preserve">
+        <value>Abteilung: </value>
+    </data>
+    <data name="Time" xml:space="preserve">
+        <value>Zeit: </value>
+    </data>
+    <data name="RequestReplacement" xml:space="preserve">
+        <value>Tauschanfrage verlangen</value>
+    </data>
+    <data name="RequestConfirmMessage" xml:space="preserve">
+        <value>Möchtest du deine Schicht wirklich tauschen für: </value>
+    </data>
+    <data name="From" xml:space="preserve">
+        <value>von</value>
+    </data>
+    <data name="RequestButton" xml:space="preserve">
+        <value>Anzufordern</value>
+    </data>
+    <data name="CancelButton" xml:space="preserve">
+        <value>Abbrechen</value>
+    </data>
+    <data name="CancelRequest" xml:space="preserve">
+        <value>Tauschanfrage abbrechen</value>
+    </data>
+    <data name="RequestCancelConfirm" xml:space="preserve">
+        <value>Möchtest du deine Tauschanfrage wirklich tauschen für: </value>
+    </data>
+    <data name="RequestAgain" xml:space="preserve">
+        <value>Erneut anfordern</value>
+    </data>
+    <data name="CancelExistingRequest" xml:space="preserve">
+        <value>Anfrage zurückziehen</value>
+    </data>
+    <data name="StatusAgain" xml:space="preserve">
+        <value>Antrag erneut stellen</value>
+    </data>
+    <data name="StatusPending" xml:space="preserve">
+        <value>Warten auf Manager-Genehmigung</value>
+    </data>
+</root>

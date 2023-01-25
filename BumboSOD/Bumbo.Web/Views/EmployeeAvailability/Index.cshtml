@@ -1,0 +1,106 @@
+@model EmployeeAvailabilityViewModel
+
+@{
+    ViewData["Title"] = "EmployeeAvailability";
+}
+
+<div class="align-items-center pt-3">
+    <head class="h3">
+        <title>Beschikbaarheid</title>
+        <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x mb-5 fs-6">
+            <li class="nav-item">
+                <a class="nav-link active show" data-bs-toggle="tab" href="#specialId">Speciale beschikbaarheid</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " data-bs-toggle="tab" href="#standardId">Standaard beschikbaarheid</a>
+            </li>
+        </ul>
+    </head>
+    <body>
+    <div class="tab-content" id="availabilityContent">
+        <div class="tab-pane fade active show" role="tabpanel" id="specialId">
+            <partial name="SpecialPartialView" model="@Model.SpecialAvailabilityViewModel"/>
+        </div>
+        <div class="tab-pane fade" role="tabpanel" id="standardId">
+            <partial name="StandardAvailabilityPartialView" model="@Model"/>
+        </div>
+    </div>
+    </body>
+</div>
+
+@section PageScripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+    let currentDate = new Date().toLocaleDateString();
+ $("#kt_datepicker").flatpickr({
+        enableTime: false,
+        "locale": {
+                    "format": "DD/MM/YY",
+                    "separator": "-",
+                    firstDayOfWeek: 1
+                },
+                defaultDate: "today",
+                minDate: "today",
+                maxDate: new Date().fp_incr(365),
+               },
+       function (date) {
+       $("#PickedDate").val(date.format("DD-MM-YY"));
+       document.getElementById("dateForm").submit();
+  });
+
+  $("#kt_datepicker_2").flatpickr({
+         enableTime: false,
+         "locale": {
+                     "format": "DD/MM/YYYY",
+                     "separator": "-",
+                     firstDayOfWeek: 1
+                 },
+                 defaultDate: "today",
+                 minDate: "today",
+                 maxDate: new Date().fp_incr(365),
+                },
+        function (date) {
+        $("#StartTime").val(date.format("DD-MM-YYYY"));
+        document.getElementById("startDateForm").submit();
+   });
+
+  $(document).ready(function () {
+       $("#kt_timepicker_1").flatpickr({
+           enableTime: true,
+           noCalendar: true,
+           dateFormat: "H:i",
+           defaultDate: "13:00",
+           minTime: "08:00",
+           maxTime: "23:59",
+           time_24hr: true,
+           },
+
+            function (start) {
+                  $("#Start").val(start.format("H:i"));
+
+                  document.getElementById("dateForm").submit();
+       });
+        $("#kt_timepicker_2").flatpickr({
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            defaultDate: "15:00",
+            minTime: "08:00",
+            maxTime: "23:59",
+            time_24hr: true,
+            },
+
+              function (end) {
+                   $("#End").val(end.format("H:i"));
+                   let start = $("#Start").val();
+                   if (Date.parse(end) >= Date.parse(start)) {
+                       alert("Start time cannot be after end time");
+                   }
+                   else {
+                       document.getElementById("dateForm").submit();
+                   }
+        });
+  });
+      </script>
+}

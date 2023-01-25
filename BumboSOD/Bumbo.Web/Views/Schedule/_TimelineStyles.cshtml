@@ -1,0 +1,108 @@
+<link href="~/assets/plugins/custom/vis-timeline/vis-timeline.bundle.css" rel="stylesheet" type="text/css"/>
+<style>
+    .active-department-item {
+        border-color: green !important;
+        border-width: 2px !important;
+    }
+    .shift-item {
+      background-color: #20D489; !important;
+      border-style: solid !important;
+    }
+    .not-published-shift-item {
+       border-style: dashed !important;
+    }
+    .solid-border-item {
+       border-style: solid !important;
+    }
+    .past-shift-item{
+      height: 20%;
+      top: 5px !important;
+      z-index: 10 !important;
+    }
+    .ill-shift-item{
+      border-color: #A06BE7 !important;
+    }
+    .clocked-hour-item{
+      background-color: #fbb279; !important;
+      border-color: #f68933 !important;
+      border-style: solid !important;
+    }
+    .not-approved-clocked-hour-item {
+       border-style: dashed !important;
+    }
+    .availability-item {
+      background-color: #20D489 !important;
+      height: inherit !important;
+      opacity:  8%;
+      scale: 1 0.7 !important;
+    }
+    .availability-item-legenda{
+      background-color: #eaf6ef !important;
+    }
+    .new-item {
+      background-color: #DDE8F1 !important;
+      border-color: #2668AE !important;
+      border-style: dashed !important;
+    }
+    .mr-2 {
+    margin-right:.5rem!important;
+    }
+    .department-item-4 {
+        background: repeating-linear-gradient(
+            0deg,
+            rgba(32, 212, 137, 0.7),
+            rgba(32, 212, 137, 0.7) 5px,
+            rgba(32, 212, 137, 0.2) 5px,
+            rgba(32, 212, 137, 0.2) 10px
+        );
+    }
+    .department-item-5 {
+        background: repeating-linear-gradient(
+          45deg,
+          rgba(32, 212, 137, 0.2),
+          rgba(32, 212, 137, 0.2) 5px,
+          rgba(32, 212, 137, 0.7) 5px,
+          rgba(32, 212, 137, 0.7) 10px
+        );
+    }
+    .department-item-6 {
+        background: repeating-linear-gradient(
+          90deg,
+          rgba(32, 212, 137, 0.2),
+          rgba(32, 212, 137, 0.2) 5px,
+          rgba(32, 212, 137, 0.7) 5px,
+          rgba(32, 212, 137, 0.7) 10px
+        );
+    }
+
+    .conflict-shift-item {
+      border-color: #FF0000 !important;
+    }
+
+    /*.vis-timeline .vis-item .vis-item-content {*/
+    /*  padding: 0 !important;*/
+    /*}*/
+
+    .vis-labelset > .vis-label, .vis-foreground > .vis-group {
+        border-bottom: 1px solid #cbcbd5 !important;
+
+    }
+    .vis-labelset > .vis-label, .vis-foreground > .vis-group {
+        min-height: 40px !important;
+    }
+    .vis-labelset > .vis-label:last-child, .vis-foreground > .vis-group:last-child {
+        border-bottom: none !important;
+    }
+    .vis-timeline {
+        border-color: #cbcbd5 !important;
+    }
+
+    #kt_docs_vistimeline_group {
+        background-color: #FBF9F6;
+    }
+
+    .vis-item .vis-onUpdateTime-tooltip {
+        width: 100px !important;
+    }
+
+</style>

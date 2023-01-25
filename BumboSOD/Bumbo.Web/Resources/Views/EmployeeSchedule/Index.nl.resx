@@ -1,0 +1,78 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="ScheduleTitle" xml:space="preserve">
+        <value>Rooster</value>
+    </data>
+    <data name="Shifts" xml:space="preserve">
+        <value>Diensten</value>
+    </data>
+    <data name="ShiftsUnderTitle" xml:space="preserve">
+        <value>Vind al jouw diensten terug!</value>
+    </data>
+    <data name="Till" xml:space="preserve">
+        <value>tot</value>
+    </data>
+    <data name="ThisWeek" xml:space="preserve">
+        <value>(Deze week)</value>
+    </data>
+    <data name="Week" xml:space="preserve">
+        <value>Week</value>
+    </data>
+    <data name="ShiftAlreadyPast" xml:space="preserve">
+        <value>Deze dienst is al geweest.</value>
+    </data>
+    <data name="Department" xml:space="preserve">
+        <value>Afdeling: </value>
+    </data>
+    <data name="Time" xml:space="preserve">
+        <value>Tijd: </value>
+    </data>
+    <data name="RequestReplacement" xml:space="preserve">
+        <value>Vraag vervanging aan</value>
+    </data>
+    <data name="RequestConfirmMessage" xml:space="preserve">
+        <value>Weet je zeker dat je vervanging wil aanvragen voor de shift op: </value>
+    </data>
+    <data name="From" xml:space="preserve">
+        <value>van</value>
+    </data>
+    <data name="RequestButton" xml:space="preserve">
+        <value>Vraag aan</value>
+    </data>
+    <data name="CancelButton" xml:space="preserve">
+        <value>Annuleer</value>
+    </data>
+    <data name="CancelRequest" xml:space="preserve">
+        <value>Annuleer aanvraag</value>
+    </data>
+    <data name="RequestCancelConfirm" xml:space="preserve">
+        <value>Weet je zeker dat je het vervangingsverzoek wil intrekken voor de shift op: </value>
+    </data>
+    <data name="RequestAgain" xml:space="preserve">
+        <value>Vraag opnieuw aan</value>
+    </data>
+    <data name="CancelExistingRequest" xml:space="preserve">
+        <value>Aanvraag intrekken</value>
+    </data>
+    <data name="StatusPending" xml:space="preserve">
+        <value>Wachtend op goedkeuring van manager</value>
+    </data>
+    <data name="StatusAgain" xml:space="preserve">
+        <value>Verzoek opnieuw aanvragen</value>
+    </data>
+</root>

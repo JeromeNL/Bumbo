@@ -1,0 +1,85 @@
+@model ScheduleViewModel
+@{
+    var className = "";
+    if (@Model.ConflictsPerShift.Count > 0)
+    {
+        className += "conflict-header";
+    }
+}
+<h5 class="@className"> Shifts met conflicten (@Model.ConflictsPerShift.Count)</h5>
+
+<div class="hover-scroll h-200px mt-1 mb-1" id="cao-scroll-bar">
+    @{
+        if (@Model.ConflictsPerShift.Count < 1)
+        {
+            <a>Er zijn geen conflicten in het huidige rooster.</a>
+        }
+    }
+    @foreach (var conflict in Model.ConflictsPerShift)
+    {
+        var conflictShift = conflict.Key;
+        var conflictValue = conflict.Value;
+        var employee = conflictShift.Employee;
+        <div>
+            <a>
+                <b class="employe-conflict-header" onclick="showConflictShift('@employee.FullName', event)">@conflictShift.Employee.FullName - @conflictShift.Start.ToString("HH:mm") tot @conflictShift.End.ToString("HH:mm")</b>
+            </a>
+
+            <ul>
+                @foreach (var value in conflictValue)
+                {
+                    <li>@value</li>
+                }
+            </ul>
+        </div>
+    }
+
+</div>
+
+<script>
+    function showConflictShift(employeeName, event) {
+        console.log(employeeName);
+        // Add the value to the search bar
+        $('#search-bar').val(employeeName);
+        // Get the search bar and trigger a search
+        var searchElement = document.querySelector('#kt_docs_search_handler_basic');
+        var search = KTSearch.getInstance(searchElement);
+        search.search();
+        // Scroll to the element
+        highlightHeader(event);
+    }
+    function highlightHeader(event) {
+        var elements = document.getElementsByClassName("active-conflict-header");
+        elements.forEach(function (element) {
+            console.log(element);
+            element.classList.remove("active-conflict-header");
+        });
+
+        var target = event.currentTarget;
+        target.classList.add("active-conflict-header");
+
+        scrollHeaderToTop(target);
+    }
+    function scrollHeaderToTop(target) {
+        var scroll = document.querySelector("#cao-scroll-bar");
+        var rectScroll = scroll.getBoundingClientRect();
+        var rectItem = target.getBoundingClientRect();
+        scroll.scrollTop = parseInt(scroll.scrollTop) + parseInt(rectItem.top) - parseInt(rectScroll.top);
+    }
+</script>
+
+<style>
+    .conflict-header {
+        color: red;
+    }
+    .employe-conflict-header{
+        cursor: pointer;
+    }
+    .employe-conflict-header:hover {
+        color: darkred;
+    }
+    .active-conflict-header {
+        color: darkred;
+        font-weight: bold;
+    }
+</style>

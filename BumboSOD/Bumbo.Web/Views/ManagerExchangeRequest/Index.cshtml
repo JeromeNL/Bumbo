@@ -1,0 +1,126 @@
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model ManagerExchangeRequestViewModel
+
+@{
+    ViewData["Title"] = "ManagerExchangeRequest";
+}
+
+
+<h1 class="text-center mb-3 pb-4">Ruilverzoeken</h1>
+<div class="table-responsive">
+    @if (Model.ExchangeRequests.Count > 0)
+    {
+        <table class="table table-striped table-secondary table-row-bordered table-rounded border-3 align-items-center border table-hover gy-5 gs-2 mt-8 align-top">
+            <thead>
+            <tr class="fw-bolder fs-5 text-gray-1000 border-bottom border-gray-300 primary">
+                <th class="min-w-300px" data-priority="1">
+                    Aanvrager
+                </th>
+                <th class="min-w-300px">
+                    Vervanger
+                </th>
+                <th class="min-w-300px">
+                    Shift
+                </th>
+                <th class="min-w-300px">
+                    Besluit
+                </th>
+            </tr>
+            </thead>
+            <tbody >
+
+            @foreach (var item in Model.ExchangeRequests)
+            {
+                <tr>
+                    <td>
+                        <ul class="list-unstyled">
+                            <li class="pb-2  h6 d-flex justify-content-between align-items-center">
+                                @Html.DisplayFor(modelItem => item.OriginalUser.FirstName)
+                                @Html.DisplayFor(modelItem => item.OriginalUser.LastName)
+
+                                @if (item.Shift.IsIll)
+                                {
+                                    <span class="badge badge-secondary badge-pill ps-2">
+                                        Is Ziek
+                                    </span>
+                                }
+                            </li>
+                            <li class="pb-2  d-flex justify-content-between align-items-center">
+                                Loonschaal:
+                                <span class="badge badge-secondary badge-pill">
+                                    @Html.DisplayFor(modelItem => item.OriginalUser.PayoutScale)
+                                </span>
+                            </li>
+                            <li>
+                            </li>
+                        </ul>
+                    </td>
+
+                    <td>
+                        <ul class="list-unstyled ">
+                            <li class="pb-2  h6 d-flex justify-content-between align-items-center">
+                                @Html.DisplayFor(modelItem => item.NewUser.FirstName)
+                                @Html.DisplayFor(modelItem => item.NewUser.LastName)
+                            </li>
+
+                            <li class="pb-2  d-flex justify-content-between align-items-center">
+                                Loonschaal:
+                                <span class="badge badge-secondary badge-pill">
+                                    @Html.DisplayFor(modelItem => item.NewUser.PayoutScale)
+                                </span>
+                            </li>
+
+                        </ul>
+                    </td>
+                    <td>
+
+                        <ul class="list-unstyled list-group">
+                            <li class="pb-2 d-flex h6 justify-content-between align-items-center">
+                                @item.Shift.Start.ToShortDateString()
+                                <span class="badge badge-secondary badge-pill ">
+                                    <span>@CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(item.Shift.Start.Date.DayOfWeek)</span>
+                                </span>
+                            </li>
+
+                            <li class="pb-2 d-flex justify-content-between align-items-center">
+                                Tijd:
+                                <div>
+                                    <span class="badge badge-secondary badge-pill">
+                                        <span>@item.Shift.Start.ToString("HH:mm")</span>
+                                    </span>
+
+                                    <span class="badge badge-secondary badge-pill">
+                                        <span>@item.Shift.End.ToString("HH:mm")</span>
+                                    </span>
+                                </div>
+                            </li>
+                            <li class="pb-2 d-flex justify-content-between align-items-center">
+                                Afdeling:
+                                <div class="badge badge-secondary">
+                                    @Html.DisplayFor(modelItem => item.Shift.Department.Name)
+                                </div>
+
+                            </li>
+                        </ul>
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-evenly align-middle text-center btn-group btn-group-sm p-6" role="group">
+                            <a asp-action="ApprovedOrRejectedExchangeRequestByManager" asp-route-id="@item.Id" asp-route-isApproved="true" type="button" class="btn btn-hover-rise btn-primary btn-sm ">Accepteren</a>
+                            <a asp-action="ApprovedOrRejectedExchangeRequestByManager" asp-route-id="@item.Id" asp-route-isApproved="false" type="button" class="btn btn-hover-rise btn-danger btn-sm ">Afwijzen</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+
+
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="card card-body card-bordered text-primary mx-auto align-items-center text-center h3 w-300px pt-6">
+            Op dit moment zijn er geen ruilverzoeken
+        </div>
+    }
+</div>

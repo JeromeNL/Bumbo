@@ -1,0 +1,29 @@
+﻿<script>
+    function timelineOnMovingEvent(item, callback) {
+        // Keep items within the timeline and after the current datetime
+        let canUpdateBasedOnPlacement = false;
+        let canAddBasedOnDepartment = canPlaceShiftForDepartment(item);
+
+        let fifteenMinutesMilliSeconds = 900000;
+        var isClockedItem = item.className.includes("clocked-hour-item")
+
+        if (item.className.includes("shift-item") && item.start > new Date() && item.end < Date.parse('@Model.EndDate') && item.start > Date.parse('@Model.StartDate')) {
+            // Check if shift can be placed here
+            canUpdateBasedOnPlacement = canPlaceShiftInFuture(items, item);
+        } else if (item.className.includes("clocked-hour-item") && item.start > Date.parse('@Model.StartDate') && item.end < new Date() && item.end < Date.parse('@Model.EndDate')) {
+            // Check if shift can be placed here
+            canUpdateBasedOnPlacement = canPlaceShiftInPast(items, item);
+        }
+        // Allowed to place
+        if (!canUpdateBasedOnPlacement) return;
+
+        // Shift bigger than 15 minutes
+        if (item.end - item.start <= fifteenMinutesMilliSeconds) return;
+
+        // Same department or clocked item
+        if (!(canAddBasedOnDepartment || isClockedItem)) return;
+
+        // Allow
+        callback(item);
+    }
+</script>

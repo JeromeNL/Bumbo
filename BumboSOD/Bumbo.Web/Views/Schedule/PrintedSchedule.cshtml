@@ -1,0 +1,68 @@
+@using Bumbo.Data.Utils
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model PrintScheduleViewModel
+
+@{
+    Layout = null;
+
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - Bumbo</title>
+
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700"/>
+    <!--end::Fonts-->
+    <!--begin::Global Stylesheets Bundle(used by all pages)-->
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="~/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/>
+    <link href="~/assets/css/style.bundle.css" rel="stylesheet" type="text/css"/>
+    <!--end::Global Stylesheets Bundle-->
+    <!--begin::Page specific Stylesheets(used by this page)-->
+    <!--end::Page specific Stylesheets-->
+    <!-- Begin::Custom css-->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/Bumbo.Web.styles.css" asp-append-version="true"/>
+    <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/>
+    <!-- End::custom CSS-->
+</head>
+
+<body>
+<h2>Rooster @Model.StartDateString - @Model.EndDateString</h2>
+
+<table class="table g-2">
+    <tr>
+        <th>Naam</th>
+        @{
+            foreach (var datetime in DateUtil.EachDay(Model.StartDate, Model.EndDate))
+            {
+                <th class="fw-bold fs-6 text-gray-800">@datetime.ToString("ddd")</th>
+            }
+        }
+    </tr>
+    @foreach (var kv in Model.EmployeeShifts)
+    {
+        <tr>
+            <td>@kv.Key.FullName</td>
+            @foreach (var datetime in DateUtil.EachDay(Model.StartDate, Model.EndDate))
+            {
+                <td>
+                    @foreach (var shift in kv.Value.Where(s => s.Start.Date == datetime.Date))
+                    {
+                        <div class="fw-bold fs-6 text-gray-800">
+                            @shift.Start.ToString("HH:mm") - @shift.End.ToString("HH:mm") (@shift.Department.Name.Substring(0, 3))
+                        </div>
+                    }
+                </td>
+            }
+
+        </tr>
+        <tr></tr>
+    }
+</table>
+</body>

@@ -1,0 +1,135 @@
+@model WorkStandardsViewModel;
+
+@{
+    ViewData["Title"] = "Normeringen";
+}
+
+<ol class="breadcrumb text-muted fs-6 fw-bold">
+    <li class="breadcrumb-item pe-3">
+        <a asp-controller="Home" asp-action="Index" class="pe-3">Home</a>
+    </li>
+    <li class="breadcrumb-item pe-3">
+        <a asp-controller="History" asp-action="Index" class="pe-3">Overzicht historie</a>
+    </li>
+    <li class="breadcrumb-item px-3 text-muted">Details normeringen</li>
+</ol>
+<br/>
+<div>
+    <h1>
+        Huidige normeringen
+        <span>
+            <a asp-action="Create" class="btn-sm btn-primary text-white">+ Voeg normeringen toe</a>
+        </span>
+    </h1>
+    <a class="badge badge-secondary">@(Model.Kassa != null ? $"Datum invoering: {@Model.Uitladen.DateEntered}" : "Nog geen normeringen ingevoerd")</a>
+</div>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+        <tr class="fw-bolder fs-6 text-gray-800">
+            <th>
+                Taak
+            </th>
+            <th>
+                Vereiste tijd in minuten
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (Model.Uitladen != null)
+        {
+            <tr>
+                <td>Coli uitladen</td>
+                <td>
+                    @Model.Uitladen.RequiredTimeInMinutes
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td>
+                    Geen huidige normeringen gevonden
+                </td>
+                <td></td>
+            </tr>
+        }
+        @if (Model.VakkenVullen != null)
+        {
+            <tr>
+                <td>Vakken vullen</td>
+                <td>
+                    @Model.VakkenVullen.RequiredTimeInMinutes
+                </td>
+            </tr>
+        }
+        @if (Model.Kassa != null)
+        {
+            <tr>
+                <td>Tijd aan kassa per klant</td>
+                <td>
+                    @Model.Kassa.RequiredTimeInMinutes
+                </td>
+            </tr>
+        }
+        @if (Model.Vers != null)
+        {
+            <tr>
+                <td>Tijd per klant voor vers</td>
+                <td>
+                    @Model.Vers.RequiredTimeInMinutes
+                </td>
+            </tr>
+        }
+        @if (Model.Spiegelen != null)
+        {
+            <tr>
+                <td>Spiegelen per meter</td>
+                <td>
+                    @Model.Spiegelen.RequiredTimeInMinutes
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<div class="separator border-white my-10"></div>
+<h1>Normeringen uit het verleden</h1>
+@if (Model.PastWorkStandards != null)
+{
+    <div class="hover-scroll h-700px mt-1 mb-1">
+        @foreach (var workStandard in Model.PastWorkStandards.Keys)
+        {
+            <h3 class="badge badge-secondary">Datum invoering: @workStandard</h3>
+            <table class="table">
+                <thead>
+                <tr class="fw-bolder fs-6 text-gray-800">
+                    <th>
+                        Taak
+                    </th>
+                    <th>
+                        Vereiste tijd in minuten
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var workStandardEntry in Model.PastWorkStandards[workStandard])
+                {
+                    <tr>
+                        <td>
+                            @workStandardEntry.Task
+                        </td>
+                        <td>
+                            @workStandardEntry.RequiredTimeInMinutes
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    </div>
+}
+else
+{
+    <p>Geen normeringen uit het verleden gevonden</p>
+}

@@ -1,0 +1,66 @@
+﻿@model List<Bumbo.Data.Models.Notification>
+
+@{
+    var activeClass = "";
+    if (@Model.Count > 0)
+        activeClass = "btn-warning";
+}
+
+<iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+<div>
+    <button href="#" class="btn btn-icon btn-active-box-shadow ms-4 @activeClass" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" id="notification-btn">
+        <span class="svg-icon svg-icon-1">
+            <i class="bi bi-bell fs-4"></i>
+        </span>
+    </button>
+    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-500px" id="notification-menu" data-kt-menu="true">
+        <div class="menu-item px-3">
+            <div class="row px-3 py-4 fs-6 menu-content">
+                <div class="col text-dark fw-bold">Notificaties</div>
+                <div class="col">
+                    <form id="mark-all-read-form" method="POST" asp-controller="Notification" asp-action="MarkAllNotificationsAsRead" target="dummyframe">
+                        <a onclick="onMarkAsReadButton()" type="submit" class="text-muted text-hover-primary fw-normal fs-7 float-end">Markeer alles als gelezen</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator mb-3 opacity-75"></div>
+
+        @{
+            var hasNotifications = @Model.Count > 0;
+            foreach (var notification in Model)
+            {
+                <partial name="Menu/_NotificationMessage" model="notification"/>
+            }
+        }
+
+        <div id="no-notifications" class="menu-item text-center text-gray-600 p-3 @(hasNotifications ? "d-none" : "")">
+            Geen meldingen
+        </div>
+
+        <div class="separator mt-3 opacity-75"></div>
+    </div>
+</div>
+<script>
+    function onMarkAsReadButton() {
+        if (document.getElementsByClassName('notification-item').length === 0) return;
+        document.getElementById('mark-all-read-form').submit();
+        $('.notification-item').parent().remove();
+        hideNotificationMenu();
+        updateNotificationMenu();
+    }
+
+    function updateNotificationMenu() {
+        if (document.getElementsByClassName('notification-item').length === 0) {
+             document.getElementById('no-notifications').classList.remove('d-none');
+             document.getElementById('notification-btn').classList.remove('btn-warning');
+        }
+    }
+
+    function hideNotificationMenu() {
+        let menuElement = document.querySelector('#notification-menu');
+        KTMenu.getInstance(menuElement).hide();
+    }
+
+</script>

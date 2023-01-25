@@ -1,0 +1,90 @@
+@model SpecialAvailabilityViewModel
+@{
+    ViewData["Title"] = "SpecialAvailability";
+}
+<div>
+    <form id="dateForm" method="POST" asp-action="UpdateSpecialAvailability" asp-controller="EmployeeAvailability">
+        <div class="card shadow container d-flex">
+            <div class="row p-5">
+                <div class="mb-3 col">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">
+                        <label class="form-label"></label>
+                        <i class="bi bi-calendar-check fs-2x"></i>
+                        <input asp-for="Date" class="form-control form-control-solid" placeholder="Kies een datum" id="kt_datepicker"/>
+                    </span>
+                    <ul class="list-unstyled col pt-4 mb-3">
+                        <li>
+                            <div class="mb-3 form-switch form-check-success d-flex justify-content-between">
+                                <label class="form-check-label">De hele dag beschikbaar</label>
+                                <input asp-for="IsWholeDayAvailable" class="form-control form-check-input" type="checkbox" placeholder="De hele dag beschikbaar" id="WholeDayAvailable" onclick="onWholeDayAvailable()"/>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="mb-3">
+                                <label class="form-label">Van: </label>
+                                <input asp-for="StartTime" class="form-control form-control-solid" placeholder="Kies de eindtijd" id="kt_timepicker_1"/>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="mb-3">
+                                <label class="form-label">Tot: </label>
+                                <input asp-for="EndTime" class="form-control form-control-solid" placeholder="Kies de eindtijd" id="kt_timepicker_2"/>
+                            </div>
+
+                        </li>
+                        <li>
+                            <div class="d-flex justify-content-center align-middle text-center btn-group btn-group-sm" role="group">
+                                <a asp-action="Index" asp-controller="EmployeeAvailability" type="button" class="btn btn-secondary btn-sm">
+                                    Annuleren
+                                </a>
+                                <button type="submit" class="btn btn-accent btn-sm" id="kt_docs_sweetalert_basic">
+                                    Bevestigen
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<div class="card shadow card-bordered container d-flex mt-3 ">
+    <h5 class="pt-4 text-center"> Speciale beschikbaarheden</h5>
+    <div class="scroll h-200px">
+        @if (Model.SpecialAvailabilities.Count > 0)
+        {
+            <div class="scroll">
+                @foreach (var item in Model.SpecialAvailabilities)
+                {
+                    <div class="form-group align-middle row pb-2 pt-2 border-bottom">
+                        <div class="col-md-3 ">
+                            <label class="form-label">Datum:</label>
+                            @item.Start.ToString("dddd dd-MM-yyyy")
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Starttijd:</label>
+                            @item.Start.ToString("HH:mm")
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Eindtijd:</label>
+                            @item.End.ToString("HH:mm")
+                        </div>
+                        <div class="col-md-2">
+                            <a asp-action="DeleteSpecialAvailability" asp-controller="EmployeeAvailability" asp-route-id="@item.Id" data-repeater-delete class="btn btn-sm btn-light-secondary ">
+                                <i class="la la-trash-o"></i>Verwijderen
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="p-3 text-info text-center">
+                Op dit moment zijn er geen speciale beschikbaarheden ingepland.
+            </div>
+        }
+    </div>
+</div>

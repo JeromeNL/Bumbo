@@ -1,0 +1,39 @@
+﻿<script>
+function timelineOnSnapEvent(date, scale, step) {
+    let clone = new Date(date.valueOf());
+    clone.setSeconds(0);
+    scale = 'minute';
+    step = 15;
+
+    if (scale === 'hour') {
+        switch (step) {
+            case 4:
+                clone.setMinutes(Math.round(clone.getMinutes() / 60) * 60);
+                break;
+            default:
+                clone.setMinutes(Math.round(clone.getMinutes() / 30) * 30);
+                break;
+        }
+        clone.setSeconds(0);
+        clone.setMilliseconds(0);
+    } else if (scale === 'minute') {
+        switch (step) {
+            case 15:
+                clone.setMinutes(Math.round(clone.getMinutes() / 15) * 15);
+                break;
+            case 10:
+                clone.setMinutes(Math.round(clone.getMinutes() / 5) * 5);
+                clone.setSeconds(0);
+                break;
+            case 5:
+                clone.setSeconds(Math.round(clone.getSeconds() / 60) * 60);
+                break;
+            default:
+                clone.setSeconds(Math.round(clone.getSeconds() / 30) * 30);
+                break;
+        }
+        clone.setMilliseconds(0);
+    }
+    return clone;
+}
+</script>

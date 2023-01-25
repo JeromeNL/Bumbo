@@ -1,0 +1,73 @@
+@model CopyScheduleViewModel
+@{
+    ViewBag.Title = "Kopiëren Rooster";
+    Layout = "_Layout";
+}
+
+
+<h2>Kopiëren van het rooster</h2>
+
+@section PageScripts {
+
+    <script>
+        $("#kt_daterangepicker_1").daterangepicker({
+            "locale": {
+                "format": "DD/MM/YYYY",
+                "separator": "-"
+            },
+            "startDate": "@Model.DesiredWeekStartDateTime",
+            "endDate": "@Model.DesiredWeekEndDateTime",
+        },
+        function (start, end) {
+            $("#DesiredWeekStartDateTime").val(start.format("DD-MM-YYYY"));
+            $("#DesiredWeekEndDateTime").val(end.format("DD-MM-YYYY"));
+        });
+
+    </script>
+}
+
+
+<form id="dateForm" method="POST">
+    <div class="mb-0">
+        <label class="form-label">Week die gekopieerd moet worden:</label>
+        <br/>
+        @Html.HiddenFor(m => m.DesiredWeekStartDateTime)
+        @Html.HiddenFor(m => m.DesiredWeekEndDateTime)
+        <input type="text" class="form-control form-control solid" value="@Model.StartDateTime - @Model.EndDateTime" readonly="readonly"/>
+    </div>
+    <div class="mb-0">
+        <label class="form-label">Kies hieronder de week waarnaar gekopieerd moet worden:</label>
+        @Html.HiddenFor(m => m.DesiredWeekStartDateTime)
+        @Html.HiddenFor(m => m.DesiredWeekEndDateTime)
+        <input class="form-control form-control-solid" placeholder="Pick date rage" id="kt_daterangepicker_1"/>
+        <span asp-validation-for="DesiredWeekStartDateTime" class="text-danger"></span>
+    </div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_1">
+        Bevestigen
+    </button>
+
+    <div class="modal fade" tabindex="-1" id="kt_modal_1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Bevestiging</h3>
+
+                    <!--begin::Close-->
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="svg-icon svg-icon-1"></span>
+                    </div>
+                    <!--end::Close-->
+                </div>
+
+                <div class="modal-body">
+                    <p>Weet je zeker dat je het rooster wilt kopiëren? Hiermee worden eventuele reeds ingeplande shifts (van de geselecteerde week) die nog niet gepubliceerd zijn overschreven. </p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Sluiten</button>
+                    <button type="submit" class="btn btn-primary">Bevestigen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

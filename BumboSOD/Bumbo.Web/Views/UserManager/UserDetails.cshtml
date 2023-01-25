@@ -1,0 +1,107 @@
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model UserDetailsViewModel
+@inject IAuthorizationService AuthorizationService
+
+@{
+    ViewBag.Title = "Gebruikersdetails";
+    Layout = "_Layout";
+}
+
+<ol class="breadcrumb text-muted fs-6 fw-bold">
+    <li class="breadcrumb-item pe-3">
+        <a asp-controller="Home" asp-action="Index" class="pe-3">Home</a>
+    </li>
+    <li class="breadcrumb-item pe-3">
+        <a asp-controller="UserManager" asp-action="Index" class="pe-3">Gebruikersbeheer</a>
+    </li>
+    <li class="breadcrumb-item px-3 text-muted">Gebruikersinformatie</li>
+</ol>
+<br/>
+
+<h1>Gebruikersinformatie</h1>
+<a class="btn btn-primary" asp-action="EditUser" asp-route-id="@Model.Id">Bewerken</a>
+@if ((await AuthorizationService.AuthorizeAsync(User, "IsAdmin")).Succeeded)
+{
+    <a class="btn btn-primary" asp-action="MakeUserBranchManager" asp-route-id="@Model.Id">Branchmanager maken</a>
+}
+
+@if ((await AuthorizationService.AuthorizeAsync(User, "CanDeactivateAccounts")).Succeeded)
+{
+    <a class="btn btn-primary" asp-action="DeactivateUser" asp-route-id="@Model.Id">Account deactiveren</a>
+}
+
+<dl class="row">
+    <dt class="col-sm-2">
+        BumboID
+    </dt>
+    <dd class="col-sm-10">
+        @Model.Id
+    </dd>
+    <dt class="col-sm-2">
+        Naam
+    </dt>
+    <dd class="col-sm-10">
+        @Model.FullName
+    </dd>
+    <dt class="col-sm-2">
+        Filiaal
+    </dt>
+    <dd class="col-sm-10">
+        @Model.Branch.Name
+    </dd>
+    <dt class="col-sm-2">
+        In dienst sinds
+    </dt>
+    <dd class="col-sm-10">
+        @Model.RegistrationDate.ToString("dd-MM-yyyy")
+    </dd>
+    <dt class="col-sm-2">
+        Geboortedatum
+    </dt>
+    <dd class="col-sm-10">
+        @Model.BirthDate.ToString("dd-MM-yyyy")
+    </dd>
+    <dt class="col-sm-2">
+        Adres
+    </dt>
+    <dd class="col-sm-10">
+        @Model.Address.Street @Model.Address.HouseNumber - @Model.Address.Zipcode - @Model.Address.City
+    </dd>
+    <dt class="col-sm-2">
+        Loonschaal
+    </dt>
+    <dd class="col-sm-10">
+        @Model.PayoutScale
+    </dd>
+    <dt class="col-sm-2">
+        E-mail
+    </dt>
+    <dd class="col-sm-10">
+        @Model.Email
+    </dd>
+    <dt class="col-sm-2">
+        Telefoonnummer
+    </dt>
+    <dd class="col-sm-10">
+        @Model.PhoneNumber
+    </dd>
+    <dt class="col-sm-2">
+        Afdelingen
+    </dt>
+    <dd class="col-sm-10">
+        @foreach (var department in Model.CurrentDepartments)
+        {
+            <span class="badge badge-primary">@department.Name</span>
+        }
+    </dd>
+    <dt class="col-sm-2">
+        Rol
+    </dt>
+    <dd class="col-sm-10">
+        @foreach (var role in Model.CurrentRoles)
+        {
+            <span class="badge badge-primary">@role</span>
+        }
+    </dd>
+</dl>

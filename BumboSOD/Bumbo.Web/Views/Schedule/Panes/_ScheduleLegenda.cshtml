@@ -1,0 +1,64 @@
+﻿@model ScheduleViewModel
+<script>
+    function filter(node) {
+        return (node.className !== 'vis-current-time');
+    }
+</script>
+<style>
+    .border-legenda {
+        border: 3px solid #dee2e6;
+    }
+</style>
+
+<div class="row">
+    <button id="legenda-button" type="button" class="m-1 btn btn-secondary col justify-content-center w-100" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-start">
+        <span class="m-1 fa fa-question-circle"></span>
+        Legenda
+    </button>
+
+    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-250px" data-kt-menu="true">
+        <div class="separator mb-3 opacity-75"></div>
+        <div class="menu-item px-4">
+            <h5 class="m-1">
+                Kleuren:
+            </h5>
+            <div class="p-1 mb-1 border-1 menu-item px-4 border-legenda shift-item">
+                Shift
+            </div>
+            <div class="p-1 mb-1 border-1 menu-item px-4 border-legenda conflict-shift-item">
+                Shift met conflicten
+            </div>
+            <div class="p-1 mb-1 border-1 menu-item px-4 border-legenda ill-shift-item">
+                Ziekgemelde shift
+            </div>
+            <div class="p-1 mb-1 border-1 menu-item px-4 border-legenda new-item">
+                Nieuwe shift
+            </div>
+            <div class="p-1 mb-1 border-1 menu-item px-4 border-legenda clocked-hour-item">
+                Gewerkte uren
+            </div>
+            <div class="p-1 mb-1 border-1 menu-item px-4 border-legenda availability-item-legenda">
+                Beschikbaarheid (achtergrond)
+            </div>
+        </div>
+        <div class="separator mt-3 opacity-75"></div>
+        <div class="menu-item px-3">
+            <h5 class="m-1">
+                Randen:
+            </h5>
+            <div class="p-1 mb-1 border-1 menu-item px-4 not-published-shift-item">
+                <div>
+                    Niet gepubliceerde shift / <br/>
+                    Niet goedgekeurde gewerkte uren
+                </div>
+            </div>
+            <div class="p-1 mb-1 border-1 menu-item px-4 solid-border-item">
+                <div>
+                    Gepubliceerde shift / <br/>
+                    Goedgekeurde gewerkte uren
+                </div>
+            </div>
+        </div>
+        <div class="separator mt-3 opacity-75"></div>
+    </div>
+</div>

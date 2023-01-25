@@ -1,0 +1,29 @@
+@model BranchManagementViewModel
+<div class="card container min-h-xxl-800px d-flex justify-content-between pb-2">
+    <div class="ps-3">
+
+        @switch (Model.CurrentView)
+        {
+            case "Empty":
+                <partial name="_Empty" model="@Model"/>
+                break;
+            case "Create":
+                <partial name="_CreateBranch" model="@Model"/>
+                break;
+            case "Edit":
+                <partial name="_EditBranch" model="@Model"/>
+                break;
+            case "Read":
+                if (Model.SelectedBranch != null)
+                {
+                    <partial name="_ReadBranch" model="@Model"/>
+                }
+                break;
+        }
+
+    </div>
+</div>
+
+@section PageScripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -1,0 +1,100 @@
+﻿@using NuGet.Protocol
+@model List<Bumbo.Data.Models.Department>
+
+<script>
+    let graphDataContent = [];
+    $(document).ready(function () {
+
+        let currentDate = "@Html.Raw(DateTime.Parse(Context.Request.Query["InputDateTime"]).ToString("yyyy-MM-dd"))";
+
+        let graphDataCategories = @Html.Raw(Model.Select(x => x.Name).ToJson());
+
+        let prognosis = {
+            name: "Prognosis",
+            data: []
+        };
+        let actual = {
+            name: "Gepland",
+            data: []
+        };
+
+        // Loop through categories
+        for(let i = 0; i < graphDataCategories.length; i++) {
+            let lower = graphDataCategories[i].toLowerCase();
+
+            // Loop through planned
+            addToSeries(actual.data, hoursPlannedForEachDay[currentDate], lower);
+
+            // Loop through prognosis
+            addToSeries(prognosis.data, prognosisForEachDay[currentDate], lower);
+        }
+        graphDataContent = [prognosis, actual];
+
+        function addToSeries(dataObject, hoursObject, category) {
+            let keys = Object.keys(hoursObject);
+            for(let j = 0; j < keys.length; j++) {
+                if(keys[j].toLowerCase() === category) {
+                    let objectKey = keys[j];
+                    dataObject.push(parseFloat(hoursObject[objectKey]).toFixed(1));
+                    return;
+                }
+            }
+            dataObject.push(0);
+        }
+
+
+        let element = document.getElementById('graph-planned-vs-prognosis');
+
+        if (!element) {
+            return;
+        }
+
+
+        let options = {
+            series: graphDataContent,
+            chart: {
+                fontFamily: 'inherit',
+                type: 'bar',
+                height: '200px',
+                toolbar: {
+                    show: false
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: ['50%'],
+                    endingShape: 'rounded'
+                },
+            },
+            legend: {
+                show: true
+            },
+            dataLabels: {
+                enabled: true,
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: graphDataCategories,
+            },
+            tooltip: {
+                style: {
+                    fontSize: '12px'
+                },
+                y: {
+                    formatter: function (val) {
+                        return val + ' uur'
+                    }
+                }
+            },
+        };
+
+        let chart = new ApexCharts(element, options);
+        chart.render();
+
+    });
+</script>

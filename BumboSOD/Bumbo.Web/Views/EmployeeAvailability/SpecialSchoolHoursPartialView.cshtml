@@ -1,0 +1,68 @@
+@model SpecialAvailabilityViewModel
+@{
+    ViewData["Title"] = "SpecialSchoolHours";
+}
+
+<form id="startDateForm" method="POST" asp-action="UpdateSpecialSchoolHours" asp-controller="EmployeeAvailability">
+    <div class="card shadow container d-flex">
+        <div class="row p-5">
+            <div class="mb-3 col">
+                <span class="input-group-text" id="inputGroup-sizing-sm">
+                    <label class="form-label"></label>
+                    <i class="bi bi-calendar-check fs-2x"></i>
+                    <input asp-for="StartTime" class="form-control form-control-solid" placeholder="Kies een datum" id="kt_datepicker_2"/>
+                </span>
+                <ul class="list-unstyled col pt-4">
+                    <li>
+                        <div class="mb-0">
+                            <label class="form-label"></label>
+                            <input asp-for="SchoolHours" class="form-control form-control-solid" placeholder="Aantal schooluren" min="0" max="10"/>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="d-flex justify-content-center align-middle text-center btn-group btn-group-sm" role="group">
+                            <a asp-action="Index" asp-controller="EmployeeAvailability" type="button" class="btn btn-secondary btn-sm">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                            <button type="submit" class="btn btn-accent btn-sm" id="kt_docs_sweetalert_basic">
+                                Bevestigen
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="card shadow card-bordered container d-flex">
+    <h5 class="pt-4"> Speciale schooluren:</h5>
+    <div class="scroll h-300px">
+        @if (Model.SpecialSchoolHoursList.Count > 0)
+        {
+            @foreach (var item in Model.SpecialSchoolHoursList)
+            {
+                <div class="form-group align-middle row pb-2 pt-2 border-bottom">
+                    <div class="col-md-3 ">
+                        <label class="form-label">Datum:</label>
+                        @item.Start.ToString("dddd dd-MM-yyyy")
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Aantal uur:</label>
+                        @item.Hours
+                    </div>
+                    <div class="col-md-2">
+                        <a asp-action="DeleteSpecialSchoolHour" asp-controller="EmployeeAvailability" asp-route-id="@item.Id" data-repeater-delete class="btn btn-sm btn-light-secondary ">
+                            <i class="la la-trash-o"></i>Verwijderen
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="p-3 text-info text-center">
+                Op dit moment zijn er geen speciale schooluren aangegeven.
+            </div>
+        }
+    </div>
+</div>

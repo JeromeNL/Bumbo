@@ -1,0 +1,109 @@
+﻿@using Bumbo.Data.Models.Enums
+@model Bumbo.Web.Models.ExportWorkedHoursViewModel
+
+@{
+    ViewData["Title"] = "Export";
+}
+
+<h2>Gewerkte uren voor medewerkers voor datum <span class="fst-italic">@Model.StartDate.ToString("dd-MM-yyyy")</span> tot <span class="fst-italic">@Model.EndDate.ToString("dd-MM-yyyy")</span> op branch <span class="fst-italic">@Model.BranchName</span>.</h2>
+<form method="POST" asp-action="AddListToCsv" asp-controller="ExportWorkedHours">
+    @if (@Model.WorkingFeesForEmployees.Count > 0)
+    {
+        <div>
+            <a asp-action="Index" asp-controller="ExportWorkedHours" class="btn btn-sm btn-secondary m-3">Terug</a>
+        </div>
+        <div class="scroll h-450px bg-white rounded-4 p-5 m-5">
+            <table class="table table-row-bordered">
+                <div class="row">
+                    <div class="col fw-boldest m-3">
+                        <h5>Medewerker</h5>
+                    </div>
+                    <div class="col fw-boldest m-3">
+                        <h5>Totale uren per toelagsoort voor de maand @Model.MonthString van @Model.Year</h5>
+                    </div>
+                </div>
+                @foreach (var employee in @Model.WorkingFeesForEmployees.Keys)
+                {
+                    var workingFeesEmployee = Model.WorkingFeesForEmployees[employee];
+                    var totalHours = 0.0;
+                    var totalWorkingFeeHours = 0.0;
+                    @foreach (var workingFee in workingFeesEmployee.WorkedHoursPerAllowance.Keys)
+                    {
+                        var workingFeeHours = workingFeesEmployee.WorkedHoursPerAllowance[workingFee].TotalHours;
+
+                        totalHours += workingFeeHours;
+                        if (workingFee is not Allowances.RegulierGekloktUur)
+                        {
+                            totalWorkingFeeHours += workingFeeHours;
+                        }
+                    }
+                    <div class="accordion" id="kt_accordion_1">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="kt_accordion_1_header_@employee.Id">
+                                <button class="accordion-button fs-5 fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#kt_accordion_1_body_@employee.Id" aria-expanded="true" aria-controls="kt_accordion_1_body_@employee.Id">
+                                    <div class="col">
+                                        <p>
+                                            <span class="fw-bolder">@employee.FullName</span>
+                                        </p>
+                                    </div>
+                                    <div class="col">
+                                        <p>Totale uren: <span class="fw-bolder">@Math.Round(totalHours, MidpointRounding.AwayFromZero)</span> waarvan <span class="fw-bolder">@Math.Round(@totalWorkingFeeHours, MidpointRounding.AwayFromZero)</span> uren toeslag</p>
+                                    </div>
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="kt_accordion_1_body_@employee.Id" class="accordion-collapse collapse" aria-labelledby="kt_accordion_1_header_@employee.Id" data-bs-parent="#kt_accordion_@employee.Id">
+                            <div class="accordion-body">
+                                @{
+                                    var workingFees = Model.WorkingFeesForEmployees[employee];
+                                }
+
+                                @foreach (var workingFee in workingFees.WorkedHoursPerAllowance.Keys.Where(workingFee => !(Math.Round(workingFees.WorkedHoursPerAllowance[workingFee].TotalHours, MidpointRounding.AwayFromZero) <= 0)))
+                                {
+                                    <div class="row">
+                                        <div class="col">
+                                        </div>
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    <p>Uren: @Math.Round(workingFees.WorkedHoursPerAllowance[workingFee].TotalHours, MidpointRounding.AwayFromZero)</p>
+                                                </div>
+                                                <div class="col">
+                                                    <p>Toeslag type = @workingFee</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @Html.HiddenFor(o => o.Month)
+                                @Html.HiddenFor(o => o.Year)
+                                @Html.HiddenFor(o => o.BranchName)
+                                @Html.HiddenFor(o => o.MonthString)
+                                @Html.HiddenFor(o => o.StartDate)
+                                @Html.HiddenFor(o => o.EndDate)
+                            </div>
+                        </div>
+                    </div>
+                }
+            </table>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary mx-5 mt-5">Exporteer</button>
+        </div>
+    }
+    else
+    {
+        <div class="h-400px w-auto flex-center d-flex align-center justify-content-center">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Voor deze maand zijn er geen gewerkte uren</h5>
+                    <p class="card-text">Probeer het later nog een keer</p>
+                    <a asp-action="Index" class="btn btn-sm btn-primary ">Ga terug</a>
+                </div>
+                <div class="card-footer text-muted">
+                    @DateTime.Now.ToLongDateString() - @DateTime.Now.ToShortTimeString()
+                </div>
+            </div>
+        </div>
+    }
+</form>
