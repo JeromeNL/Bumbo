@@ -1,4 +1,5 @@
-# Werkregels GitHub
+# Project Bumbo (Semester 3)
+During the 'Bumbo' project, a supermarket management system was built in a group of 7 students using ASP.NET MVC
 
 ## GitHub workflow
 ### Commits
